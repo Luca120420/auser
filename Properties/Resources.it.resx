@@ -178,4 +178,106 @@
     <value>Formato ora non valido nella riga {0}.</value>
     <comment>Error when time format is invalid. {0} will be replaced with row number</comment>
   </data>
+  
+  <!-- Volunteer Management Error Messages -->
+  <data name="ErrorVolunteerFileNotFound" xml:space="preserve">
+    <value>Il file dei volontari non è stato trovato.</value>
+    <comment>Error when volunteer file is not found</comment>
+  </data>
+  <data name="ErrorInvalidVolunteerFile" xml:space="preserve">
+    <value>Il file dei volontari contiene dati non validi o è corrotto.</value>
+    <comment>Error when volunteer file contains invalid JSON</comment>
+  </data>
+  <data name="ErrorEmptySurname" xml:space="preserve">
+    <value>Il cognome non può essere vuoto.</value>
+    <comment>Error when surname is empty or whitespace</comment>
+  </data>
+  <data name="ErrorInvalidEmail" xml:space="preserve">
+    <value>L'indirizzo email non è valido.</value>
+    <comment>Error when email address format is invalid</comment>
+  </data>
+  <data name="ConfirmDeleteAllVolunteers" xml:space="preserve">
+    <value>Sei sicuro di voler eliminare tutti i contatti dei volontari? Questa operazione non può essere annullata.</value>
+    <comment>Confirmation message when deleting all volunteer contacts</comment>
+  </data>
+  
+  <!-- Volunteer Management UI Strings -->
+  <data name="AddVolunteersButton" xml:space="preserve">
+    <value>Aggiungi Volontari</value>
+    <comment>Button label for uploading volunteer file</comment>
+  </data>
+  <data name="AddContactButton" xml:space="preserve">
+    <value>Aggiungi Contatto</value>
+    <comment>Button label for adding a new volunteer contact</comment>
+  </data>
+  <data name="DeleteAllButton" xml:space="preserve">
+    <value>Elimina Tutti</value>
+    <comment>Button label for deleting all volunteer contacts</comment>
+  </data>
+  <data name="SendEmailsButton" xml:space="preserve">
+    <value>Invia Email</value>
+    <comment>Button label for sending email notifications</comment>
+  </data>
+  <data name="VolunteerListColumnSurname" xml:space="preserve">
+    <value>Cognome</value>
+    <comment>Column header for volunteer surname in list</comment>
+  </data>
+  <data name="VolunteerListColumnEmail" xml:space="preserve">
+    <value>Email</value>
+    <comment>Column header for volunteer email in list</comment>
+  </data>
+  <data name="VolunteerContactsGroupTitle" xml:space="preserve">
+    <value>Contatti Volontari</value>
+    <comment>Group box title for volunteer contacts section</comment>
+  </data>
+  
+  <!-- Additional Error Messages (Task 8.2) -->
+  <data name="ErrorNoVolontarioColumn" xml:space="preserve">
+    <value>La colonna 'Volontario' non è stata trovata nel foglio selezionato.</value>
+    <comment>Error when Volontario column is not found in selected sheet</comment>
+  </data>
+  <data name="ErrorGmailConnection" xml:space="preserve">
+    <value>Impossibile connettersi al server Gmail SMTP. Verificare le credenziali.</value>
+    <comment>Error when Gmail SMTP connection fails</comment>
+  </data>
+  <data name="ErrorEmptyExcelFile" xml:space="preserve">
+    <value>Il file Excel non contiene fogli.</value>
+    <comment>Error when Excel file contains no sheets</comment>
+  </data>
+  <data name="ErrorConfigCorrupted" xml:space="preserve">
+    <value>Il file di configurazione è corrotto. Utilizzando configurazione vuota.</value>
+    <comment>Warning when configuration file is corrupted</comment>
+  </data>
+  
+  <!-- Email Content Strings (Task 8.3) -->
+  <data name="EmailSubjectTemplate" xml:space="preserve">
+    <value>Servizi Assegnati - Settimana {0}</value>
+    <comment>Email subject line template. {0} will be replaced with week identifier</comment>
+  </data>
+  <data name="EmailGreetingTemplate" xml:space="preserve">
+    <value>Gentile {0},</value>
+    <comment>Email greeting template. {0} will be replaced with volunteer name</comment>
+  </data>
+  <data name="EmailBodyIntro" xml:space="preserve">
+    <value>Ecco i servizi assegnati per questa settimana:</value>
+    <comment>Email body introduction text</comment>
+  </data>
+  <data name="EmailBodyRowSeparator" xml:space="preserve">
+    <value>---</value>
+    <comment>Separator between assigned rows in email body</comment>
+  </data>
+  <data name="EmailBodyClosing" xml:space="preserve">
+    <value>Grazie per la tua disponibilità.</value>
+    <comment>Email body closing text</comment>
+  </data>
+  
+  <!-- Confirmation and Summary Strings (Task 8.4) -->
+  <data name="EmailSendingProgress" xml:space="preserve">
+    <value>Invio email in corso...</value>
+    <comment>Progress message while sending emails</comment>
+  </data>
+  <data name="EmailSummaryTemplate" xml:space="preserve">
+    <value>Invio completato. Email inviate con successo: {0}. Email non inviate: {1}.</value>
+    <comment>Email sending summary template. {0} = success count, {1} = failure count</comment>
+  </data>
 </root>

@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 namespace AuserExcelTransformer.Models
 {
     /// <summary>
-    /// Represents an enhanced transformed row with the new 14-column structure.
+    /// Represents an enhanced transformed row with the new 12-column structure.
     /// Columns: Data, Partenza, Assistito, Indirizzo, Destinazione, Note, Auto, Volontario, 
-    /// Arrivo, Avv, [empty], Indirizzo Gasnet, Note Gasnet, [empty]
+    /// Arrivo, Avv, Indirizzo Gasnet, Note Gasnet
     /// </summary>
     public class EnhancedTransformedRow
     {
@@ -63,12 +63,6 @@ namespace AuserExcelTransformer.Models
         public string Avv { get; set; } = string.Empty;
 
         /// <summary>
-        /// Empty column 1
-        /// </summary>
-        public string Empty1 { get; set; } = string.Empty;
-
-
-        /// <summary>
         /// INDIRIZZO GASNET - Aggregated address
         /// </summary>
         public string IndirizzoGasnet { get; set; } = string.Empty;
@@ -77,10 +71,5 @@ namespace AuserExcelTransformer.Models
         /// NOTE GASNET - Notes from CSV (positioned after Indirizzo Gasnet)
         /// </summary>
         public string NoteGasnet { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Empty column 2
-        /// </summary>
-        public string Empty2 { get; set; } = string.Empty;
     }
 }

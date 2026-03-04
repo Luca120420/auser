@@ -151,10 +151,8 @@ namespace AuserExcelTransformer.Tests
                     Volontario = "Vol1",
                     Arrivo = "",
                     Avv = "",
-                    Empty1 = "",
                     IndirizzoGasnet = "Via Roma 1, Milano",
-                    NoteGasnet = "",
-                    Empty2 = ""
+                    NoteGasnet = ""
                 };
             });
         }
@@ -269,10 +267,8 @@ namespace AuserExcelTransformer.Tests
                             Volontario = GetCellValueAsString(worksheet.Cells[row, 8]),
                             Arrivo = GetCellValueAsString(worksheet.Cells[row, 9]),
                             Avv = GetCellValueAsString(worksheet.Cells[row, 10]),
-                            Empty1 = GetCellValueAsString(worksheet.Cells[row, 11]),
-                            IndirizzoGasnet = GetCellValueAsString(worksheet.Cells[row, 12]),
-                            NoteGasnet = GetCellValueAsString(worksheet.Cells[row, 13]),
-                            Empty2 = GetCellValueAsString(worksheet.Cells[row, 14])
+                            IndirizzoGasnet = GetCellValueAsString(worksheet.Cells[row, 11]),
+                            NoteGasnet = GetCellValueAsString(worksheet.Cells[row, 12])
                         };
                         
                         readBackRows.Add(readRow);
@@ -331,10 +327,8 @@ namespace AuserExcelTransformer.Tests
                    original.Volontario == readBack.Volontario &&
                    original.Arrivo == readBack.Arrivo &&
                    original.Avv == readBack.Avv &&
-                   original.Empty1 == readBack.Empty1 &&
                    original.IndirizzoGasnet == readBack.IndirizzoGasnet &&
-                   original.NoteGasnet == readBack.NoteGasnet &&
-                   original.Empty2 == readBack.Empty2;
+                   original.NoteGasnet == readBack.NoteGasnet;
         }
 
         /// <summary>

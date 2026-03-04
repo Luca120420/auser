@@ -644,17 +644,11 @@ namespace AuserExcelTransformer.Services
                 // Column 10: Avv (from fissi lookup)
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.Avv;
                 
-                // Column 11: Empty1
-                sheet.Worksheet.Cells[currentRow, col++].Value = row.Empty1;
-                
-                // Column 12: Indirizzo Gasnet
+                // Column 11: Indirizzo Gasnet
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.IndirizzoGasnet;
                 
-                // Column 13: Note Gasnet (from CSV)
+                // Column 12: Note Gasnet (from CSV)
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.NoteGasnet;
-                
-                // Column 14: Empty2
-                sheet.Worksheet.Cells[currentRow, col++].Value = row.Empty2;
 
                 currentRow++;
             }
@@ -902,5 +896,267 @@ namespace AuserExcelTransformer.Services
             // Fallback: just join all parts with space
             return string.Join(" ", parts);
         }
+
+        /// <summary>
+        /// Identifies the column index containing "Volontario" in the header row.
+        /// Performs case-insensitive search for the column header.
+        /// </summary>
+        /// <param name="sheet">The sheet to search</param>
+        /// <returns>The 1-based column index of the Volontario column</returns>
+        /// <exception cref="InvalidOperationException">If the Volontario column is not found</exception>
+        public int GetVolontarioColumnIndex(Sheet sheet)
+        {
+            if (sheet == null || sheet.Worksheet == null)
+            {
+                throw new ArgumentNullException(nameof(sheet));
+            }
+
+            var worksheet = sheet.Worksheet;
+            
+            // Determine the header row - typically row 1, but we'll search the first few rows
+            // to be more flexible
+            int headerRow = 1;
+            
+            // Get the dimensions of the worksheet to know how many columns to check
+            var dimension = worksheet.Dimension;
+            if (dimension == null)
+            {
+                throw new InvalidOperationException("Il foglio è vuoto.");
+            }
+
+            int maxColumn = dimension.End.Column;
+            
+            // Search for "Volontario" in the header row (case-insensitive)
+            for (int col = 1; col <= maxColumn; col++)
+            {
+                var cell = worksheet.Cells[headerRow, col];
+                string cellText = cell.Text;
+                
+                if (!string.IsNullOrWhiteSpace(cellText) && 
+                    cellText.IndexOf("Volontario", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return col;
+                }
+            }
+            
+            // If not found in row 1, try row 2 (some sheets might have a different structure)
+            headerRow = 2;
+            for (int col = 1; col <= maxColumn; col++)
+            {
+                var cell = worksheet.Cells[headerRow, col];
+                string cellText = cell.Text;
+                
+                if (!string.IsNullOrWhiteSpace(cellText) && 
+                    cellText.IndexOf("Volontario", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return col;
+                }
+            }
+            
+            throw new InvalidOperationException("La colonna 'Volontario' non è stata trovata nel foglio selezionato.");
+        }
+        /// <summary>
+                /// Reads all data rows from a sheet and returns them as a list of dictionaries.
+                /// Each dictionary maps column names to cell values for that row.
+                /// </summary>
+                /// <param name="sheet">The sheet to read from</param>
+                /// <returns>List of dictionaries where each dictionary represents a row with column name -> cell value mappings</returns>
+                /// <exception cref="ArgumentNullException">If sheet is null</exception>
+                /// <exception cref="InvalidOperationException">If sheet is empty or has no header row</exception>
+                public List<Dictionary<string, string>> ReadAllRowsWithColumnNames(Sheet sheet)
+                {
+                    if (sheet == null || sheet.Worksheet == null)
+                    {
+                        throw new ArgumentNullException(nameof(sheet));
+                    }
+
+                    var worksheet = sheet.Worksheet;
+                    var dimension = worksheet.Dimension;
+
+                    if (dimension == null)
+                    {
+                        throw new InvalidOperationException("Il foglio è vuoto.");
+                    }
+
+                    var result = new List<Dictionary<string, string>>();
+
+                    // Determine header row by looking for "Volontario" column
+                    int headerRow = 1;
+                    int maxColumn = dimension.End.Column;
+                    int maxRow = dimension.End.Row;
+                    
+                    // Check if row 1 has "Volontario" column
+                    bool foundInRow1 = false;
+                    for (int col = 1; col <= maxColumn; col++)
+                    {
+                        var cell = worksheet.Cells[1, col];
+                        string cellText = cell.Text?.Trim() ?? string.Empty;
+                        if (!string.IsNullOrWhiteSpace(cellText) && 
+                            cellText.IndexOf("Volontario", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            foundInRow1 = true;
+                            break;
+                        }
+                    }
+                    
+                    // If not found in row 1, check row 2
+                    if (!foundInRow1)
+                    {
+                        bool foundInRow2 = false;
+                        for (int col = 1; col <= maxColumn; col++)
+                        {
+                            var cell = worksheet.Cells[2, col];
+                            string cellText = cell.Text?.Trim() ?? string.Empty;
+                            if (!string.IsNullOrWhiteSpace(cellText) && 
+                                cellText.IndexOf("Volontario", StringComparison.OrdinalIgnoreCase) >= 0)
+                            {
+                                foundInRow2 = true;
+                                break;
+                            }
+                        }
+                        
+                        if (foundInRow2)
+                        {
+                            headerRow = 2;
+                        }
+                    }
+
+                    // Read column names from header row
+                    var columnNames = new Dictionary<int, string>();
+                    for (int col = 1; col <= maxColumn; col++)
+                    {
+                        var cell = worksheet.Cells[headerRow, col];
+                        string columnName = cell.Text?.Trim() ?? $"Column{col}";
+                        columnNames[col] = columnName;
+                    }
+
+                    // Read all data rows (starting from row after header)
+                    for (int row = headerRow + 1; row <= maxRow; row++)
+                    {
+                        var rowData = new Dictionary<string, string>();
+                        bool hasData = false;
+
+                        for (int col = 1; col <= maxColumn; col++)
+                        {
+                            var cell = worksheet.Cells[row, col];
+                            string cellValue = cell.Text?.Trim() ?? string.Empty;
+
+                            if (!string.IsNullOrWhiteSpace(cellValue))
+                            {
+                                hasData = true;
+                            }
+
+                            rowData[columnNames[col]] = cellValue;
+                        }
+
+                        // Only add rows that have at least some data
+                        if (hasData)
+                        {
+                            result.Add(rowData);
+                        }
+                    }
+
+                    return result;
+                }
+
+                /// <summary>
+                /// Identifies volunteer assignments by matching volunteer surnames to rows in the sheet.
+                /// For each volunteer, finds all rows where the volunteer's surname appears in the Volontario column
+                /// using case-insensitive substring matching.
+                /// </summary>
+                /// <param name="sheet">The sheet to read from</param>
+                /// <param name="volunteers">Dictionary mapping volunteer surnames to email addresses</param>
+                /// <returns>List of VolunteerAssignment objects containing surname, email, and assigned rows</returns>
+                /// <exception cref="ArgumentNullException">If sheet or volunteers is null</exception>
+                /// <exception cref="InvalidOperationException">If Volontario column is not found</exception>
+                public List<VolunteerAssignment> IdentifyVolunteerAssignments(Sheet sheet, Dictionary<string, string> volunteers)
+                {
+                    if (sheet == null || sheet.Worksheet == null)
+                    {
+                        throw new ArgumentNullException(nameof(sheet));
+                    }
+
+                    if (volunteers == null)
+                    {
+                        throw new ArgumentNullException(nameof(volunteers));
+                    }
+
+                    var result = new List<VolunteerAssignment>();
+
+                    // Get the Volontario column index
+                    int volontarioColumnIndex = GetVolontarioColumnIndex(sheet);
+
+                    // Read all rows with column names
+                    var allRows = ReadAllRowsWithColumnNames(sheet);
+
+                    // Determine the header row (same logic as ReadAllRowsWithColumnNames)
+                    var worksheet = sheet.Worksheet;
+                    var dimension = worksheet.Dimension;
+                    int headerRow = 1;
+                    int maxColumn = dimension.End.Column;
+                    
+                    // Check if row 1 has "Volontario" column
+                    bool foundInRow1 = false;
+                    for (int col = 1; col <= maxColumn; col++)
+                    {
+                        var cell = worksheet.Cells[1, col];
+                        string cellText = cell.Text?.Trim() ?? string.Empty;
+                        if (!string.IsNullOrWhiteSpace(cellText) && 
+                            cellText.IndexOf("Volontario", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            foundInRow1 = true;
+                            break;
+                        }
+                    }
+                    
+                    // If not found in row 1, check row 2
+                    if (!foundInRow1)
+                    {
+                        headerRow = 2;
+                    }
+
+                    // Get the column name for the Volontario column from the correct header row
+                    var volontarioColumnName = worksheet.Cells[headerRow, volontarioColumnIndex].Text?.Trim() ?? $"Column{volontarioColumnIndex}";
+
+                    // For each volunteer, find matching rows
+                    foreach (var volunteer in volunteers)
+                    {
+                        string surname = volunteer.Key;
+                        string email = volunteer.Value;
+
+                        var assignedRows = new List<Dictionary<string, string>>();
+
+                        // Find all rows where the surname appears in the Volontario column
+                        foreach (var row in allRows)
+                        {
+                            // Check if this row has the Volontario column
+                            if (row.ContainsKey(volontarioColumnName))
+                            {
+                                string volontarioValue = row[volontarioColumnName];
+
+                                // Case-insensitive substring matching
+                                if (!string.IsNullOrWhiteSpace(volontarioValue) &&
+                                    volontarioValue.IndexOf(surname, StringComparison.OrdinalIgnoreCase) >= 0)
+                                {
+                                    assignedRows.Add(row);
+                                }
+                            }
+                        }
+
+                        // Only add volunteers who have at least one assigned row
+                        if (assignedRows.Count > 0)
+                        {
+                            result.Add(new VolunteerAssignment
+                            {
+                                Surname = surname,
+                                Email = email,
+                                AssignedRows = assignedRows
+                            });
+                        }
+                    }
+
+                    return result;
+                }
+
     }
 }

@@ -298,5 +298,212 @@ namespace AuserExcelTransformer.Properties {
                 return ResourceManager.GetString("InvalidTimeFormat", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Il file dei volontari non è stato trovato..
+        /// </summary>
+        internal static string ErrorVolunteerFileNotFound {
+            get {
+                return ResourceManager.GetString("ErrorVolunteerFileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Il file dei volontari contiene dati non validi o è corrotto..
+        /// </summary>
+        internal static string ErrorInvalidVolunteerFile {
+            get {
+                return ResourceManager.GetString("ErrorInvalidVolunteerFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Il cognome non può essere vuoto..
+        /// </summary>
+        internal static string ErrorEmptySurname {
+            get {
+                return ResourceManager.GetString("ErrorEmptySurname", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to L'indirizzo email non è valido..
+        /// </summary>
+        internal static string ErrorInvalidEmail {
+            get {
+                return ResourceManager.GetString("ErrorInvalidEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sei sicuro di voler eliminare tutti i contatti dei volontari? Questa operazione non può essere annullata..
+        /// </summary>
+        internal static string ConfirmDeleteAllVolunteers {
+            get {
+                return ResourceManager.GetString("ConfirmDeleteAllVolunteers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aggiungi Volontari.
+        /// </summary>
+        internal static string AddVolunteersButton {
+            get {
+                return ResourceManager.GetString("AddVolunteersButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aggiungi Contatto.
+        /// </summary>
+        internal static string AddContactButton {
+            get {
+                return ResourceManager.GetString("AddContactButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elimina Tutti.
+        /// </summary>
+        internal static string DeleteAllButton {
+            get {
+                return ResourceManager.GetString("DeleteAllButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invia Email.
+        /// </summary>
+        internal static string SendEmailsButton {
+            get {
+                return ResourceManager.GetString("SendEmailsButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cognome.
+        /// </summary>
+        internal static string VolunteerListColumnSurname {
+            get {
+                return ResourceManager.GetString("VolunteerListColumnSurname", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email.
+        /// </summary>
+        internal static string VolunteerListColumnEmail {
+            get {
+                return ResourceManager.GetString("VolunteerListColumnEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contatti Volontari.
+        /// </summary>
+        internal static string VolunteerContactsGroupTitle {
+            get {
+                return ResourceManager.GetString("VolunteerContactsGroupTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to La colonna 'Volontario' non è stata trovata nel foglio selezionato..
+        /// </summary>
+        internal static string ErrorNoVolontarioColumn {
+            get {
+                return ResourceManager.GetString("ErrorNoVolontarioColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Impossibile connettersi al server Gmail SMTP. Verificare le credenziali..
+        /// </summary>
+        internal static string ErrorGmailConnection {
+            get {
+                return ResourceManager.GetString("ErrorGmailConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Il file Excel non contiene fogli..
+        /// </summary>
+        internal static string ErrorEmptyExcelFile {
+            get {
+                return ResourceManager.GetString("ErrorEmptyExcelFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Il file di configurazione è corrotto. Utilizzando configurazione vuota..
+        /// </summary>
+        internal static string ErrorConfigCorrupted {
+            get {
+                return ResourceManager.GetString("ErrorConfigCorrupted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Servizi Assegnati - Settimana {0}.
+        /// </summary>
+        internal static string EmailSubjectTemplate {
+            get {
+                return ResourceManager.GetString("EmailSubjectTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gentile {0},.
+        /// </summary>
+        internal static string EmailGreetingTemplate {
+            get {
+                return ResourceManager.GetString("EmailGreetingTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ecco i servizi assegnati per questa settimana:.
+        /// </summary>
+        internal static string EmailBodyIntro {
+            get {
+                return ResourceManager.GetString("EmailBodyIntro", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ---.
+        /// </summary>
+        internal static string EmailBodyRowSeparator {
+            get {
+                return ResourceManager.GetString("EmailBodyRowSeparator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grazie per la tua disponibilità..
+        /// </summary>
+        internal static string EmailBodyClosing {
+            get {
+                return ResourceManager.GetString("EmailBodyClosing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invio email in corso....
+        /// </summary>
+        internal static string EmailSendingProgress {
+            get {
+                return ResourceManager.GetString("EmailSendingProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invio completato. Email inviate con successo: {0}. Email non inviate: {1}..
+        /// </summary>
+        internal static string EmailSummaryTemplate {
+            get {
+                return ResourceManager.GetString("EmailSummaryTemplate", resourceCulture);
+            }
+        }
     }
 }

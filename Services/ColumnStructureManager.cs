@@ -39,7 +39,7 @@ namespace AuserExcelTransformer.Services
 
         public ColumnStructureManager()
         {
-            // Define the 14-column structure
+            // Define the 12-column structure
             _columnHeaders = new List<string>
             {
                 "Data",                 // 1
@@ -52,10 +52,8 @@ namespace AuserExcelTransformer.Services
                 "Volontario",           // 8
                 "Arrivo",               // 9
                 "Avv",                  // 10 (new, from fissi lookup)
-                "",                     // 11 (empty)
-                "Indirizzo Gasnet",     // 12
-                "Note Gasnet",          // 13 (from CSV)
-                ""                      // 14 (empty)
+                "Indirizzo Gasnet",     // 11
+                "Note Gasnet"           // 12 (from CSV)
             };
 
             // Define old-to-new column name mappings
@@ -66,7 +64,7 @@ namespace AuserExcelTransformer.Services
         }
 
         /// <summary>
-        /// Returns the 15-column header structure.
+        /// Returns the 12-column header structure.
         /// </summary>
         public List<string> GetColumnHeaders()
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using AuserExcelTransformer.Services;
@@ -13,6 +14,7 @@ namespace AuserExcelTransformer.UI
     public partial class MainForm : Form, IGUI
     {
         private readonly IApplicationController _controller;
+        private readonly VolunteerPanel? _volunteerPanel;
         
         // UI Controls
         private Button btnSelectCSV = null!;
@@ -34,6 +36,114 @@ namespace AuserExcelTransformer.UI
             _controller = controller ?? throw new ArgumentNullException(nameof(controller));
             InitializeComponent();
             InitializeCustomComponents();
+            
+            // Initialize volunteer feature with dependency injection (Requirements 1.6, 3.3)
+            _volunteerPanel = InitializeVolunteerFeature();
+        }
+        
+        /// <summary>
+        /// Initializes the volunteer notification feature with all required dependencies.
+        /// Creates service instances and the VolunteerPanel control.
+        /// Validates: Requirements 1.6, 3.3, 10.1, 10.2, 10.3
+        /// </summary>
+        /// <returns>The initialized VolunteerPanel, or null if initialization fails</returns>
+        private VolunteerPanel? InitializeVolunteerFeature()
+        {
+            try
+            {
+                // Create service instances (Requirement 10.2)
+                var volunteerManager = new VolunteerManager();
+                var emailService = new EmailService();
+                var configurationService = new ConfigurationService();
+                var excelManager = new ExcelManager();
+                
+                // Create a simple wrapper that will hold the panel reference
+                // This allows us to pass the UI to the controller before the panel is fully created
+                VolunteerPanelWrapper wrapper = new VolunteerPanelWrapper();
+                
+                // Create VolunteerNotificationController with all dependencies (Requirement 10.2)
+                var controller = new VolunteerNotificationController(
+                    volunteerManager,
+                    emailService,
+                    configurationService,
+                    excelManager,
+                    wrapper);
+                
+                // Create the VolunteerPanel with the controller (Requirement 10.2)
+                var panel = new VolunteerPanel(controller);
+                wrapper.Panel = panel; // Set the actual panel in the wrapper
+                
+                // Add panel to form layout below existing transformation controls (Requirement 10.1)
+                panel.Location = new Point(20, 350);
+                panel.Size = new Size(800, 600);
+                panel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+                this.Controls.Add(panel);
+                
+                // Adjust form size to accommodate volunteer panel (Requirement 10.1)
+                this.Size = new Size(850, 1000);
+                this.AutoScroll = true;
+                
+                // Trigger display of loaded configuration now that panel is ready (Requirement 10.3)
+                // The controller already loaded the configuration in its constructor,
+                // now we refresh the UI to display the loaded data.
+                controller.RefreshUIDisplay();
+                
+                return panel;
+            }
+            catch (Exception ex)
+            {
+                // Log error and return null if initialization fails
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize volunteer feature: {ex.Message}");
+                return null;
+            }
+        }
+        
+        /// <summary>
+        /// Wrapper class to handle circular dependency between controller and panel.
+        /// </summary>
+        private class VolunteerPanelWrapper : IVolunteerUI
+        {
+            public VolunteerPanel? Panel { get; set; }
+            
+            public void DisplayVolunteerList(Dictionary<string, string> volunteers)
+            {
+                Panel?.DisplayVolunteerList(volunteers);
+            }
+            
+            public void DisplayGmailCredentials(string email, string password)
+            {
+                Panel?.DisplayGmailCredentials(email, password);
+            }
+            
+            public void DisplaySheetNames(List<string> sheetNames)
+            {
+                Panel?.DisplaySheetNames(sheetNames);
+            }
+            
+            public void EnableSendEmailsButton(bool enabled)
+            {
+                Panel?.EnableSendEmailsButton(enabled);
+            }
+            
+            public void ShowEmailProgress(string message)
+            {
+                Panel?.ShowEmailProgress(message);
+            }
+            
+            public void ShowEmailSummary(int successCount, int failureCount)
+            {
+                Panel?.ShowEmailSummary(successCount, failureCount);
+            }
+            
+            public bool ConfirmAction(string message)
+            {
+                return Panel?.ConfirmAction(message) ?? false;
+            }
+            
+            public void ShowErrorMessage(string message)
+            {
+                Panel?.ShowErrorMessage(message);
+            }
         }
         
         /// <summary>

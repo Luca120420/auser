@@ -40,10 +40,8 @@ namespace AuserExcelTransformer.Tests
                 Volontario = "Bianchi Giuseppe",
                 Arrivo = "09:30",
                 Avv = "SI",
-                Empty1 = "",
                 IndirizzoGasnet = "Milano Via Verdi 10",
-                NoteGasnet = "Note da CSV",
-                Empty2 = ""
+                NoteGasnet = "Note da CSV"
             };
 
             // Assert
@@ -57,10 +55,8 @@ namespace AuserExcelTransformer.Tests
             Assert.That(row.Volontario, Is.EqualTo("Bianchi Giuseppe"));
             Assert.That(row.Arrivo, Is.EqualTo("09:30"));
             Assert.That(row.Avv, Is.EqualTo("SI"));
-            Assert.That(row.Empty1, Is.EqualTo(""));
             Assert.That(row.IndirizzoGasnet, Is.EqualTo("Milano Via Verdi 10"));
             Assert.That(row.NoteGasnet, Is.EqualTo("Note da CSV"));
-            Assert.That(row.Empty2, Is.EqualTo(""));
         }
 
         [Test]
@@ -73,7 +69,7 @@ namespace AuserExcelTransformer.Tests
             // Act & Assert - Verify the 14-column structure
             var propertyNames = properties.Select(p => p.Name).ToList();
             
-            Assert.That(propertyNames.Count, Is.EqualTo(14), "Should have exactly 14 columns");
+            Assert.That(propertyNames.Count, Is.EqualTo(12), "Should have exactly 12 columns");
             Assert.That(propertyNames[0], Is.EqualTo("Data"));
             Assert.That(propertyNames[1], Is.EqualTo("Partenza"));
             Assert.That(propertyNames[2], Is.EqualTo("Assistito"));
@@ -84,10 +80,8 @@ namespace AuserExcelTransformer.Tests
             Assert.That(propertyNames[7], Is.EqualTo("Volontario"));
             Assert.That(propertyNames[8], Is.EqualTo("Arrivo"));
             Assert.That(propertyNames[9], Is.EqualTo("Avv"));
-            Assert.That(propertyNames[10], Is.EqualTo("Empty1"));
-            Assert.That(propertyNames[11], Is.EqualTo("IndirizzoGasnet"));
-            Assert.That(propertyNames[12], Is.EqualTo("NoteGasnet"));
-            Assert.That(propertyNames[13], Is.EqualTo("Empty2"));
+            Assert.That(propertyNames[10], Is.EqualTo("IndirizzoGasnet"));
+            Assert.That(propertyNames[11], Is.EqualTo("NoteGasnet"));
         }
 
         [Test]
@@ -104,17 +98,6 @@ namespace AuserExcelTransformer.Tests
             // Assert - Validates Requirement 2.1
             Assert.That(indirizzoIndex, Is.EqualTo(assistitoIndex + 1), 
                 "Indirizzo should be positioned immediately after Assistito");
-        }
-
-        [Test]
-        public void EnhancedTransformedRow_HasTwoEmptyColumns()
-        {
-            // Arrange
-            var row = new EnhancedTransformedRow();
-
-            // Act & Assert - Verify both empty columns exist and are initialized to empty string
-            Assert.That(row.Empty1, Is.EqualTo(string.Empty));
-            Assert.That(row.Empty2, Is.EqualTo(string.Empty));
         }
 
         [Test]
@@ -230,31 +213,6 @@ namespace AuserExcelTransformer.Tests
 
             // Assert
             Assert.That(isValid, Is.True);
-        }
-
-        [Test]
-        public void EnhancedTransformedRow_EmptyColumnsRemainEmpty()
-        {
-            // Arrange
-            var row = new EnhancedTransformedRow
-            {
-                Data = "2024-01-26",
-                Partenza = "09:00",
-                Assistito = "Rossi Mario",
-                Indirizzo = "Via Roma 10",
-                Destinazione = "Ospedale",
-                Note = "Test",
-                Auto = "Fiat",
-                Volontario = "Bianchi",
-                Arrivo = "09:30",
-                Avv = "SI",
-                IndirizzoGasnet = "Milano",
-                NoteGasnet = "Note"
-            };
-
-            // Assert - Verify empty columns remain empty
-            Assert.That(row.Empty1, Is.Empty);
-            Assert.That(row.Empty2, Is.Empty);
         }
 
         [Test]

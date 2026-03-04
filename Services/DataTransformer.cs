@@ -165,17 +165,11 @@ namespace AuserExcelTransformer.Services
                 // Column 10: Avv (from fissi lookup)
                 Avv = avv,
 
-                // Column 11: Empty
-                Empty1 = string.Empty,
-
-                // Column 12: Indirizzo Gasnet
+                // Column 11: Indirizzo Gasnet
                 IndirizzoGasnet = indirizzoGasnet,
 
-                // Column 13: Note Gasnet (from CSV Note field - Requirement 7.2)
-                NoteGasnet = appointment.NoteERichieste ?? string.Empty,
-
-                // Column 14: Empty
-                Empty2 = string.Empty
+                // Column 12: Note Gasnet (from CSV Note field - Requirement 7.2)
+                NoteGasnet = appointment.NoteERichieste ?? string.Empty
             };
 
             return row;

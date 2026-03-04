@@ -178,4 +178,26 @@
     <value>Formato ora non valido nella riga {0}.</value>
     <comment>Error when time format is invalid. {0} will be replaced with row number</comment>
   </data>
+  
+  <!-- Volunteer Management Error Messages -->
+  <data name="ErrorVolunteerFileNotFound" xml:space="preserve">
+    <value>Il file dei volontari non è stato trovato.</value>
+    <comment>Error when volunteer file is not found</comment>
+  </data>
+  <data name="ErrorInvalidVolunteerFile" xml:space="preserve">
+    <value>Il file dei volontari contiene dati non validi o è corrotto.</value>
+    <comment>Error when volunteer file contains invalid JSON</comment>
+  </data>
+  <data name="ErrorEmptySurname" xml:space="preserve">
+    <value>Il cognome non può essere vuoto.</value>
+    <comment>Error when surname is empty or whitespace</comment>
+  </data>
+  <data name="ErrorInvalidEmail" xml:space="preserve">
+    <value>L'indirizzo email non è valido.</value>
+    <comment>Error when email address format is invalid</comment>
+  </data>
+  <data name="ConfirmDeleteAllVolunteers" xml:space="preserve">
+    <value>Sei sicuro di voler eliminare tutti i contatti dei volontari? Questa operazione non può essere annullata.</value>
+    <comment>Confirmation message when deleting all volunteer contacts</comment>
+  </data>
 </root>

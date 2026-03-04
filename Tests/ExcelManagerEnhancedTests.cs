@@ -72,10 +72,8 @@ namespace AuserExcelTransformer.Tests
                 Assert.That(worksheet.Cells[2, 8].Value?.ToString(), Is.EqualTo("Volontario"));
                 Assert.That(worksheet.Cells[2, 9].Value?.ToString(), Is.EqualTo("Arrivo"));
                 Assert.That(worksheet.Cells[2, 10].Value?.ToString(), Is.EqualTo("Avv"));
-                Assert.That(worksheet.Cells[2, 11].Value?.ToString() ?? "", Is.EqualTo(""));
-                Assert.That(worksheet.Cells[2, 12].Value?.ToString(), Is.EqualTo("Indirizzo Gasnet"));
-                Assert.That(worksheet.Cells[2, 13].Value?.ToString(), Is.EqualTo("Note Gasnet"));
-                Assert.That(worksheet.Cells[2, 14].Value?.ToString() ?? "", Is.EqualTo(""));
+                Assert.That(worksheet.Cells[2, 11].Value?.ToString(), Is.EqualTo("Indirizzo Gasnet"));
+                Assert.That(worksheet.Cells[2, 12].Value?.ToString(), Is.EqualTo("Note Gasnet"));
             }
         }
 
@@ -102,10 +100,8 @@ namespace AuserExcelTransformer.Tests
                         Volontario = "Vol1",
                         Arrivo = "10:00",
                         Avv = "TestAvv",
-                        Empty1 = "",
                         IndirizzoGasnet = "Via Milano 2, Milano",
-                        NoteGasnet = "CSV note",
-                        Empty2 = ""
+                        NoteGasnet = "CSV note"
                     }
                 };
 
@@ -122,8 +118,8 @@ namespace AuserExcelTransformer.Tests
                 Assert.That(worksheet.Cells[3, 8].Value?.ToString(), Is.EqualTo("Vol1"));
                 Assert.That(worksheet.Cells[3, 9].Value?.ToString(), Is.EqualTo("10:00"));
                 Assert.That(worksheet.Cells[3, 10].Value?.ToString(), Is.EqualTo("TestAvv"));
-                Assert.That(worksheet.Cells[3, 12].Value?.ToString(), Is.EqualTo("Via Milano 2, Milano"));
-                Assert.That(worksheet.Cells[3, 13].Value?.ToString(), Is.EqualTo("CSV note"));
+                Assert.That(worksheet.Cells[3, 11].Value?.ToString(), Is.EqualTo("Via Milano 2, Milano"));
+                Assert.That(worksheet.Cells[3, 12].Value?.ToString(), Is.EqualTo("CSV note"));
             }
         }
 
@@ -150,10 +146,8 @@ namespace AuserExcelTransformer.Tests
                         Volontario = "",
                         Arrivo = "",
                         Avv = "",
-                        Empty1 = "",
                         IndirizzoGasnet = "",
-                        NoteGasnet = "",
-                        Empty2 = ""
+                        NoteGasnet = ""
                     }
                 };
 
@@ -216,7 +210,7 @@ namespace AuserExcelTransformer.Tests
                 _excelManager.ApplyBoldToHeaders(sheet, 2);
 
                 // Assert
-                for (int col = 1; col <= 14; col++)
+                for (int col = 1; col <= 12; col++)
                 {
                     Assert.That(worksheet.Cells[2, col].Style.Font.Bold, Is.True, 
                         $"Column {col} header should be bold");

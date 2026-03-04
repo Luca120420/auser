@@ -46,6 +46,16 @@
     <Compile Include="Tests\FissiColumnMappingPreservationTests.cs" />
     <Compile Include="Tests\FissiTimeFormatBugExplorationTests.cs" />
     <Compile Include="Tests\FissiTimeFormatPreservationTests.cs" />
+    <Compile Include="Tests\VolunteerManagerPropertyTests.cs" />
+    <Compile Include="Tests\VolunteerManagerTests.cs" />
+    <Compile Include="Tests\ConfigurationServicePropertyTests.cs" />
+    <Compile Include="Tests\ConfigurationServiceTests.cs" />
+    <Compile Include="Tests\EmailServicePropertyTests.cs" />
+    <Compile Include="Tests\EmailServiceTests.cs" />
+    <Compile Include="Tests\ExcelManagerVolunteerPropertyTests.cs" />
+    <Compile Include="Tests\ExcelManagerTests.cs" />
+    <Compile Include="Tests\VolunteerNotificationControllerPropertyTests.cs" />
+    <Compile Include="Tests\VolunteerNotificationControllerTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

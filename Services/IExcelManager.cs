@@ -150,5 +150,16 @@ namespace AuserExcelTransformer.Services
         /// <param name="startRow">First data row (1-based)</param>
         /// <param name="endRow">Last data row (1-based)</param>
         void ApplyThickBordersToDateGroups(Sheet sheet, int startRow, int endRow);
+
+        /// <summary>
+        /// Identifies volunteer assignments from a sheet by matching volunteer surnames
+        /// to values in the Volontario column.
+        /// </summary>
+        /// <param name="sheet">The sheet to read from</param>
+        /// <param name="volunteers">Dictionary mapping volunteer surnames to email addresses</param>
+        /// <returns>List of volunteer assignments with assigned rows</returns>
+        /// <exception cref="System.ArgumentNullException">If sheet or volunteers is null</exception>
+        /// <exception cref="System.InvalidOperationException">If Volontario column is not found</exception>
+        List<VolunteerAssignment> IdentifyVolunteerAssignments(Sheet sheet, Dictionary<string, string> volunteers);
     }
 }

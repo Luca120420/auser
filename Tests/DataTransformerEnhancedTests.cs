@@ -80,10 +80,8 @@ namespace AuserExcelTransformer.Tests
             Assert.That(row.Volontario, Is.Empty);
             Assert.That(row.Arrivo, Is.Empty);
             Assert.That(row.Avv, Is.EqualTo("SI"));
-            Assert.That(row.Empty1, Is.Empty);
             Assert.That(row.IndirizzoGasnet, Is.EqualTo("Milano Via Roma 10"));
             Assert.That(row.NoteGasnet, Is.EqualTo("Portare documenti"));
-            Assert.That(row.Empty2, Is.Empty);
 
             // Verify lookups were called
             _mockLookupService.Verify(x => x.LookupInAssistiti("Rossi Mario", "Indirizzo"), Times.Once);
