@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
-    <AssemblyName>AuserExcelTransformer</AssemblyName>
+    <AssemblyName>AuserGestioneTrasporti</AssemblyName>
     <RootNamespace>AuserExcelTransformer</RootNamespace>
     <StartupObject>AuserExcelTransformer.Program</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
