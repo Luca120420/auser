@@ -1,0 +1,15 @@
+DATA SERVIZIO;ORA INIZIO SERVIZIO;ATTIVITA;DESCRIZIONE STATO SERVIZIO;INDIRIZZO PARTENZA;COMUNE PARTENZA;DESCRIZIONE PUNTO PARTENZA;INDIRIZZO DESTINAZIONE;COMUNE DESTINAZIONE;CAUSALE DESTINAZIONE;COGNOME ASSISTITO;NOME ASSISTITO;NOTE E RICHIESTE;
+09/02/2026;08:30;Accompag. con macchina attrezzata;PIANIFICATO;Via Roma 15;SARONNO;Ritirare presso abitazione;Via Ospedale 1;MILANO;Ospedale Niguarda;Rossi;Maria;Portare documenti sanitari;
+09/02/2026;10:00;Accomp. servizi con trasporto;PIANIFICATO;Via Garibaldi 23;BUSTO ARSIZIO;;Piazza Duomo 5;MILANO;Visita specialistica;Bianchi;Giuseppe;Accompagnamento per visita cardiologica;
+10/02/2026;14:30;Accomp. servizi con trasporto;ANNULLATO;Via Mazzini 8;VARESE;Cancello principale;Via Verdi 12;COMO;Ospedale Sant'Anna;Verdi;Anna;Appuntamento annullato dal paziente;
+10/02/2026;09:15;Accompag. con macchina attrezzata;IN PIANIFICAZIONE;Via Dante 45;GALLARATE;Ingresso laterale;Via Cadorna 78;LEGNANO;Centro riabilitazione;Ferrari;Luigi;Necessita sedia a rotelle;
+11/02/2026;11:00;Accomp. servizi con trasporto;PIANIFICATO;Via Manzoni 67;SARONNO;;Via Pascoli 34;BUSTO ARSIZIO;Medico di base;Colombo;Francesca;Controllo mensile;
+11/02/2026;15:45;Accomp. servizi con trasporto;PIANIFICATO;Via Leopardi 12;MILANO;;;MILANO;Farmacia comunale;Greco;Antonio;Ritiro farmaci;
+12/02/2026;08:00;Accompag. con macchina attrezzata;PIANIFICATO;Via Foscolo 89;VARESE;Portone blu;Via Carducci 23;COMO;Ospedale Valduce;Moretti;Elena;Visita ortopedica - portare radiografie;
+12/02/2026;13:30;Accomp. servizi con trasporto;PIANIFICATO;Via Petrarca 56;GALLARATE;;Via Tasso 90;LEGNANO;Laboratorio analisi;Ricci;Paolo;Prelievi del sangue a digiuno;
+13/02/2026;10:30;Accomp. servizi con trasporto;ANNULLATO;Via Ariosto 34;BUSTO ARSIZIO;Scala A;Via Monti 67;VARESE;Centro diagnostico;Conti;Laura;Rinviato a data da destinarsi;
+13/02/2026;16:00;Accompag. con macchina attrezzata;PIANIFICATO;Via D'Annunzio 78;SARONNO;Citofono 5;Via Ungaretti 45;MILANO;Istituto Auxologico;Fontana;Carla;Terapia fisica settimanale;
+14/02/2026;09:00;Accomp. servizi con trasporto;PIANIFICATO;Via Pascoli 23;LEGNANO;;Via Manzoni 12;GALLARATE;Poliambulatorio;Marini;Roberto;Visita oculistica;
+14/02/2026;14:00;Accomp. servizi con trasporto;PIANIFICATO;Via Carducci 90;COMO;;Via Leopardi 56;VARESE;Centro prelievi;Galli;Silvia;Esami del sangue urgenti;
+15/02/2026;11:30;Accompag. con macchina attrezzata;PIANIFICATO;Via Montale 45;MILANO;Rampa disabili;Via Quasimodo 78;BUSTO ARSIZIO;Fisioterapia;Russo;Giovanni;Seduta riabilitativa;
+15/02/2026;15:00;Accomp. servizi con trasporto;PIANIFICATO;Via Saba 67;SARONNO;;Via Pavese 34;LEGNANO;Medico specialista;Lombardi;Teresa;Controllo diabetologico;

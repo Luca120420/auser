@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" use="preserve" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Button Labels -->
+  <data name="SelectCSVButton" xml:space="preserve">
+    <value>Seleziona file CSV</value>
+    <comment>Button label for CSV file selection</comment>
+  </data>
+  <data name="SelectExcelButton" xml:space="preserve">
+    <value>Seleziona file Excel</value>
+    <comment>Button label for Excel file selection</comment>
+  </data>
+  <data name="ProcessButton" xml:space="preserve">
+    <value>Elabora</value>
+    <comment>Button label for processing data</comment>
+  </data>
+  <data name="DownloadButton" xml:space="preserve">
+    <value>Scarica</value>
+    <comment>Button label for downloading/saving output</comment>
+  </data>
+  
+  <!-- Field Labels -->
+  <data name="CSVFileLabel" xml:space="preserve">
+    <value>File CSV:</value>
+    <comment>Label for CSV file path display</comment>
+  </data>
+  <data name="ExcelFileLabel" xml:space="preserve">
+    <value>File Excel:</value>
+    <comment>Label for Excel file path display</comment>
+  </data>
+  
+  <!-- Dialog Titles -->
+  <data name="SelectCSVDialogTitle" xml:space="preserve">
+    <value>Seleziona file CSV</value>
+    <comment>Title for CSV file selection dialog</comment>
+  </data>
+  <data name="SelectExcelDialogTitle" xml:space="preserve">
+    <value>Seleziona file Excel</value>
+    <comment>Title for Excel file selection dialog</comment>
+  </data>
+  <data name="SaveFileDialogTitle" xml:space="preserve">
+    <value>Salva file Excel</value>
+    <comment>Title for save file dialog</comment>
+  </data>
+  <data name="ApplicationTitle" xml:space="preserve">
+    <value>Auser Excel Transformer</value>
+    <comment>Main application window title</comment>
+  </data>
+  
+  <!-- Success Messages -->
+  <data name="SuccessMessage" xml:space="preserve">
+    <value>File salvato con successo!</value>
+    <comment>Success message after file is saved</comment>
+  </data>
+  <data name="ProcessingComplete" xml:space="preserve">
+    <value>Elaborazione completata con successo! Ora puoi scaricare il file.</value>
+    <comment>Success message after data processing is complete</comment>
+  </data>
+  
+  <!-- Error Messages -->
+  <data name="ErrorCSVFileRead" xml:space="preserve">
+    <value>Impossibile leggere il file CSV. Verificare che il file esista e sia accessibile.</value>
+    <comment>Error when CSV file cannot be read</comment>
+  </data>
+  <data name="ErrorExcelFileRead" xml:space="preserve">
+    <value>Impossibile leggere il file Excel. Verificare che il file esista e sia accessibile.</value>
+    <comment>Error when Excel file cannot be read</comment>
+  </data>
+  <data name="ErrorFileSave" xml:space="preserve">
+    <value>Impossibile salvare il file. Verificare i permessi di scrittura.</value>
+    <comment>Error when output file cannot be saved</comment>
+  </data>
+  <data name="ErrorCSVMissingColumns" xml:space="preserve">
+    <value>Il file CSV non contiene le colonne richieste: {0}</value>
+    <comment>Error when CSV is missing required columns. {0} will be replaced with column names</comment>
+  </data>
+  <data name="ErrorFissiSheetNotFound" xml:space="preserve">
+    <value>Il foglio 'fissi' non è stato trovato nel file Excel.</value>
+    <comment>Error when fissi sheet is not found in Excel workbook</comment>
+  </data>
+  <data name="ErrorHeaderParsing" xml:space="preserve">
+    <value>Impossibile analizzare l'intestazione del foglio precedente. Verificare il formato.</value>
+    <comment>Error when header cannot be parsed</comment>
+  </data>
+  <data name="ErrorDateParsing" xml:space="preserve">
+    <value>Errore nell'analisi delle date nell'intestazione.</value>
+    <comment>Error when dates in header cannot be parsed</comment>
+  </data>
+  <data name="ErrorDataTransformation" xml:space="preserve">
+    <value>Errore durante la trasformazione dei dati.</value>
+    <comment>General error during data transformation</comment>
+  </data>
+  <data name="ErrorCSVMalformed" xml:space="preserve">
+    <value>Il file CSV contiene dati non validi o è corrotto.</value>
+    <comment>Error when CSV file is malformed</comment>
+  </data>
+  <data name="ErrorGeneral" xml:space="preserve">
+    <value>Si è verificato un errore: {0}</value>
+    <comment>General error message. {0} will be replaced with error details</comment>
+  </data>
+  
+  <!-- Enhanced Workflow Error Messages -->
+  <data name="AssistitiSheetNotFound" xml:space="preserve">
+    <value>Il foglio 'assistiti' non è stato trovato nel file Excel.</value>
+    <comment>Error when assistiti sheet is not found in Excel workbook</comment>
+  </data>
+  <data name="ReferenceSheetMalformed" xml:space="preserve">
+    <value>Il foglio di riferimento '{0}' ha una struttura non valida.</value>
+    <comment>Error when reference sheet structure is invalid. {0} will be replaced with sheet name</comment>
+  </data>
+  <data name="ColumnNotFoundInReference" xml:space="preserve">
+    <value>Colonna '{0}' non trovata nel foglio di riferimento.</value>
+    <comment>Error when column is not found in reference sheet. {0} will be replaced with column name</comment>
+  </data>
+  <data name="InvalidDateFormat" xml:space="preserve">
+    <value>Formato data non valido nella riga {0}.</value>
+    <comment>Error when date format is invalid. {0} will be replaced with row number</comment>
+  </data>
+  <data name="InvalidTimeFormat" xml:space="preserve">
+    <value>Formato ora non valido nella riga {0}.</value>
+    <comment>Error when time format is invalid. {0} will be replaced with row number</comment>
+  </data>
+</root>

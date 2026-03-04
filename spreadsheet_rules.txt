@@ -1,0 +1,38 @@
+SPREADSHEET COLUMN MANAGEMENT RULES
+====================================
+
+1. Evidenziare in giallo le righe con Cancella la colonna
+   - Accompag. con macchina attrezzata → nella colonna → ATTIVITÀ
+
+2. Cancella la colonna ATTIVITÀ
+   - ATTIVITÀ → nella colonna → DESCRIZIONE STATO SERVIZIO
+
+3. Cancella la colonna
+   - ANNULLATO → nella colonna → DESCRIZIONE STATO SERVIZIO
+
+4. Se scritto qualcosa in Cancella la colonna
+   - DESCRIZIONE PUNTO PARTENZA → concatena, di seguito, quanto scritto in → DESCRIZIONE PUNTO PARTENZA
+
+5. Inserire nuova colonna in colonna
+   - ASSISTITO → dopo colonna → ORA INIZIO SERVIZIO
+
+6. Cancella colonne
+   - ASSISTITO → concatena → COGNOME ASSISTITO e NOME ASSISTITO con spazi
+
+7. Inserire nuova colonna
+   - COGNOME ASSISTITO e NOME ASSISTITO → dopo colonna → ASSISTITO
+
+8. Inserire nuova colonna
+   - INDIRIZZO → dopo colonna → INDIRIZZO
+
+9. in colonna
+   - DESTINAZIONE → dopo colonna → INDIRIZZO
+
+10. Cancella colonne
+    - INDIRIZZO → concatena COMUNE DESTINAZIONE spazio INDIRIZZO DESTINAZIONE / INDIRIZZO DESTINAZIONE / CAUSALE DESTINAZIONE → COMUNE DESTINAZIONE spazio CAUSALE DESTINAZIONE
+
+11. Inserire 5 colonne vuote dopo
+    - DESTINAZIONE
+
+12. Copiare
+    - ORA INIZIO SERVIZIO → in terza colonna dopo → DESTINAZIONE

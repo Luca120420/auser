@@ -1,0 +1,11 @@
+DATA SERVIZIO;ORA INIZIO SERVIZIO;ATTIVITA;DESCRIZIONE STATO SERVIZIO;INDIRIZZO PARTENZA;COMUNE PARTENZA;DESCRIZIONE PUNTO PARTENZA;INDIRIZZO DESTINAZIONE;COMUNE DESTINAZIONE;CAUSALE DESTINAZIONE;COGNOME ASSISTITO;NOME ASSISTITO;NOTE E RICHIESTE;
+09/02/2026;08:00;Accompag. con macchina attrezzata;PIANIFICATO;Via Roma 1;MILANO;Portone principale Portone principale;Via Verdi 5;COMO;Ospedale;Rossi;Maria;Test duplicazione punto partenza;
+10/02/2026;09:00;Accomp. servizi con trasporto;ANNULLATO;Via Garibaldi 10;VARESE;;Via Manzoni 20;LEGNANO;Visita;Bianchi;Giuseppe;Questo dovrebbe essere filtrato;
+11/02/2026;10:00;Accomp. servizi con trasporto;PIANIFICATO;Via Dante 15;BUSTO ARSIZIO;;;SARONNO;Farmacia comunale;Verdi;Anna;Test indirizzo vuoto - usa causale;
+12/02/2026;11:00;Accompag. con macchina attrezzata;ANNULLATO;Via Mazzini 25;GALLARATE;Cancello rosso Cancello rosso;;MILANO;Ospedale Niguarda;Ferrari;Luigi;Annullato - non dovrebbe apparire;
+13/02/2026;12:00;Accomp. servizi con trasporto;PIANIFICATO;Via Leopardi 30;COMO;;Via Pascoli 40;VARESE;Centro medico;D'Angelo;Nicolò;Test caratteri speciali: àèéìòù;
+14/02/2026;13:00;Accompag. con macchina attrezzata;PIANIFICATO;Via Foscolo 35;LEGNANO;Scala B Scala B;Via Carducci 45;BUSTO ARSIZIO;Fisioterapia;O'Brien;Seán;Test apostrofi e accenti;
+15/02/2026;14:00;Accomp. servizi con trasporto;ANNULLATO;Via Petrarca 50;SARONNO;;Via Tasso 55;MILANO;Laboratorio;Müller;François;Annullato - caratteri speciali;
+16/02/2026;15:00;Accompag. con macchina attrezzata;IN PIANIFICAZIONE;Via Ariosto 60;VARESE;Ingresso laterale Ingresso laterale;;COMO;Poliambulatorio San Giuseppe;Esposito;Maria Grazia;Test nome composto;
+17/02/2026;16:00;Accomp. servizi con trasporto;PIANIFICATO;Via Montale 65;GALLARATE;;Via Quasimodo 70;LEGNANO;Medico;De Luca;Antonio Maria;Test cognome e nome composti;
+18/02/2026;17:00;Accompag. con macchina attrezzata;PIANIFICATO;Via Ungaretti 75;BUSTO ARSIZIO;Citofono 12 Citofono 12;Via Saba 80;SARONNO;Ospedale;Rossi-Bianchi;Laura;Test cognome con trattino;
