@@ -56,6 +56,10 @@
     <Compile Include="Tests\ExcelManagerTests.cs" />
     <Compile Include="Tests\VolunteerNotificationControllerPropertyTests.cs" />
     <Compile Include="Tests\VolunteerNotificationControllerTests.cs" />
+    <Compile Include="Tests\MainFormBugConditionTests.cs" />
+    <Compile Include="Tests\MainFormPreservationTests.cs" />
+    <Compile Include="Tests\MainFormResponsiveLayoutTests.cs" />
+    <Compile Include="Tests\MainFormResponsiveLayoutPropertyTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -56,6 +56,9 @@ public class VolunteerNotificationController : IVolunteerNotificationController
 
         // Load configuration from persistent storage (Requirements 1.6, 3.3)
         LoadConfiguration();
+        
+        // Load volunteers from internal storage (Requirement 6.4)
+        LoadVolunteersFromInternalStorage();
     }
 
     /// <summary>
@@ -67,22 +70,6 @@ public class VolunteerNotificationController : IVolunteerNotificationController
 
         // Load Gmail credentials
         _gmailCredentials = config.GmailCredentials;
-
-        // Load volunteer file if path exists
-        if (!string.IsNullOrEmpty(config.VolunteerFilePath))
-        {
-            _volunteerFilePath = config.VolunteerFilePath;
-            try
-            {
-                _volunteers = _volunteerManager.LoadVolunteers(_volunteerFilePath);
-            }
-            catch
-            {
-                // If loading fails, start with empty volunteers
-                // Error will be shown when user tries to use the feature
-                _volunteers = new Dictionary<string, string>();
-            }
-        }
 
         // Load last selected Excel file and sheet
         _selectedExcelFilePath = config.LastExcelFilePath;
@@ -113,42 +100,43 @@ public class VolunteerNotificationController : IVolunteerNotificationController
     }
 
     public void OnVolunteerFileSelected(string filePath)
-    {
-        try
         {
-            // Load volunteers from the selected file (Requirement 1.4)
-            _volunteers = _volunteerManager.LoadVolunteers(filePath);
-            
-            // Update internal state with the file path (Requirement 1.3)
-            _volunteerFilePath = filePath;
-            
-            // Save file path to configuration for persistence (Requirement 1.3, 7.1)
-            var config = _configurationService.LoadConfiguration();
-            config.VolunteerFilePath = filePath;
-            _configurationService.SaveConfiguration(config);
-            
-            // Display volunteers in UI (Requirement 8.1)
-            _ui.DisplayVolunteerList(_volunteers);
-            
-            // Update CanSendEmails state to enable/disable send button (Requirement 5.1)
-            _ui.EnableSendEmailsButton(CanSendEmails());
+            try
+            {
+                // Load volunteers from the external file (Requirement 3.1)
+                var importedVolunteers = _volunteerManager.LoadVolunteers(filePath);
+
+                // Merge imported volunteers with existing data (Requirement 3.2, 3.3)
+                MergeVolunteers(importedVolunteers);
+
+                // Save merged data to internal storage (Requirement 3.4)
+                SaveVolunteersToInternalStorage();
+
+                // No external file path is stored (Requirement 3.5)
+
+                // Display volunteers in UI (Requirement 8.1)
+                _ui.DisplayVolunteerList(_volunteers);
+
+                // Update CanSendEmails state to enable/disable send button (Requirement 5.1)
+                _ui.EnableSendEmailsButton(CanSendEmails());
+            }
+            catch (FileNotFoundException)
+            {
+                // Handle file not found error with Italian message (Requirement 1.5)
+                _ui.ShowErrorMessage(Properties.Resources.ErrorVolunteerFileNotFound);
+            }
+            catch (InvalidOperationException)
+            {
+                // Handle invalid JSON error with Italian message (Requirement 1.5)
+                _ui.ShowErrorMessage(Properties.Resources.ErrorInvalidVolunteerFile);
+            }
+            catch (Exception ex)
+            {
+                // Handle any other errors with Italian message
+                _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            }
         }
-        catch (FileNotFoundException)
-        {
-            // Handle file not found error with Italian message (Requirement 1.5)
-            _ui.ShowErrorMessage(Properties.Resources.ErrorVolunteerFileNotFound);
-        }
-        catch (InvalidOperationException)
-        {
-            // Handle invalid JSON error with Italian message (Requirement 1.5)
-            _ui.ShowErrorMessage(Properties.Resources.ErrorInvalidVolunteerFile);
-        }
-        catch (Exception ex)
-        {
-            // Handle any other errors with Italian message
-            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
-        }
-    }
+
 
     public void OnAddVolunteer(string surname, string email)
     {
@@ -164,10 +152,7 @@ public class VolunteerNotificationController : IVolunteerNotificationController
                 _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
             }
             
-            // Update configuration (persist changes)
-            var config = _configurationService.LoadConfiguration();
-            config.VolunteerFilePath = _volunteerFilePath;
-            _configurationService.SaveConfiguration(config);
+            // Volunteer data is now saved to internal storage (no config update needed)
             
             // Refresh UI volunteer list (Requirement 8.11)
             _ui.DisplayVolunteerList(_volunteers);
@@ -216,10 +201,7 @@ public class VolunteerNotificationController : IVolunteerNotificationController
                 _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
             }
             
-            // Update configuration (persist changes)
-            var config = _configurationService.LoadConfiguration();
-            config.VolunteerFilePath = _volunteerFilePath;
-            _configurationService.SaveConfiguration(config);
+            // Volunteer data is now saved to internal storage (no config update needed)
             
             // Refresh UI volunteer list (Requirement 8.11)
             _ui.DisplayVolunteerList(_volunteers);
@@ -259,10 +241,7 @@ public class VolunteerNotificationController : IVolunteerNotificationController
                     _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
                 }
                 
-                // Update configuration (persist changes)
-                var config = _configurationService.LoadConfiguration();
-                config.VolunteerFilePath = _volunteerFilePath;
-                _configurationService.SaveConfiguration(config);
+                // Volunteer data is now saved to internal storage (no config update needed)
                 
                 // Refresh UI volunteer list (Requirement 8.11)
                 _ui.DisplayVolunteerList(_volunteers);
@@ -527,4 +506,70 @@ public class VolunteerNotificationController : IVolunteerNotificationController
                _volunteers.Count > 0 &&
                !string.IsNullOrEmpty(_selectedSheetName);
     }
+
+    /// <summary>
+    /// Loads volunteer data from internal storage (data/volunteers.json).
+    /// If the file doesn't exist, leaves the volunteers dictionary empty.
+    /// </summary>
+    private void LoadVolunteersFromInternalStorage()
+    {
+        string volunteersPath = Path.Combine(GetDataFolderPath(), "volunteers.json");
+        if (File.Exists(volunteersPath))
+        {
+            _volunteers = _volunteerManager.LoadVolunteers(volunteersPath);
+        }
+    }
+
+    /// <summary>
+    /// Saves volunteer data to internal storage (data/volunteers.json).
+    /// Handles file I/O errors with descriptive messages.
+    /// </summary>
+    private void SaveVolunteersToInternalStorage()
+    {
+        try
+        {
+            string dataFolder = GetDataFolderPath();
+            string volunteersPath = Path.Combine(dataFolder, "volunteers.json");
+            _volunteerManager.SaveVolunteers(volunteersPath, _volunteers);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            throw new InvalidOperationException(
+                $"Cannot save volunteer data to '{GetDataFolderPath()}'. Insufficient permissions. " +
+                $"Please ensure the application has write access to this location.", ex);
+        }
+        catch (IOException ex)
+        {
+            throw new InvalidOperationException(
+                $"Cannot save volunteer data to '{GetDataFolderPath()}'. " +
+                $"An I/O error occurred: {ex.Message}", ex);
+        }
+    }
+
+    /// <summary>
+    /// Merges imported volunteer data with existing volunteers.
+    /// New surnames are added, and existing surnames have their email addresses overwritten.
+    /// </summary>
+    /// <param name="importedVolunteers">Dictionary of imported volunteers to merge</param>
+    private void MergeVolunteers(Dictionary<string, string> importedVolunteers)
+    {
+        // Iterate through imported volunteers (Requirements 3.2, 3.3)
+        foreach (var volunteer in importedVolunteers)
+        {
+            // Add new surnames or overwrite existing email addresses
+            _volunteers[volunteer.Key] = volunteer.Value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the path to the data folder for storing application data.
+    /// Uses the application's base directory to ensure portability.
+    /// </summary>
+    /// <returns>The full path to the data folder</returns>
+    private string GetDataFolderPath()
+    {
+        string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+        return Path.Combine(appFolder, "data");
+    }
+
 }

@@ -1,3 +1,7 @@
 {
-  "associates": {}
+  "associates": {
+    "Rossi": "mario.rossi@example.com",
+    "Bianchi": "laura.bianchi@example.com",
+    "Verdi": "giuseppe.verdi@example.com"
+  }
 }

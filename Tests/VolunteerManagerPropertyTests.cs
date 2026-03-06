@@ -142,6 +142,80 @@ namespace AuserExcelTransformer.Tests
             ).Check(config);
         }
 
+        // Feature: portable-data-storage, Property 2: Volunteer Data Round-Trip Persistence
+        /// <summary>
+        /// Property 2: Volunteer Data Round-Trip Persistence
+        /// For any valid volunteer dictionary, saving it to internal storage and then loading it
+        /// should produce an equivalent dictionary with the same surname-to-email mappings.
+        /// **Validates: Requirements 2.2, 2.3, 6.2, 6.4**
+        /// </summary>
+        [Test]
+        public void Property_VolunteerDataRoundTripPersistence()
+        {
+            var config = Configuration.QuickThrowOnFailure;
+            config.MaxNbOfTest = 100;
+
+            Prop.ForAll(
+                Arb.From(VolunteerDictionaryGen()),
+                (Dictionary<string, string> volunteers) =>
+                {
+                    // Create a temporary test directory to simulate the data folder
+                    var tempDir = Path.Combine(Path.GetTempPath(), $"test_data_{Guid.NewGuid()}");
+                    Directory.CreateDirectory(tempDir);
+                    var volunteersPath = Path.Combine(tempDir, "volunteers.json");
+
+                    try
+                    {
+                        // Act - Save volunteers to internal storage location
+                        _volunteerManager.SaveVolunteers(volunteersPath, volunteers);
+
+                        // Act - Load volunteers from internal storage location
+                        var loaded = _volunteerManager.LoadVolunteers(volunteersPath);
+
+                        // Assert - Verify equivalence
+                        if (volunteers.Count != loaded.Count)
+                        {
+                            return false.Label($"Count mismatch: expected {volunteers.Count}, got {loaded.Count}");
+                        }
+
+                        foreach (var kvp in volunteers)
+                        {
+                            if (!loaded.ContainsKey(kvp.Key))
+                            {
+                                return false.Label($"Missing surname in loaded data: {kvp.Key}");
+                            }
+
+                            if (loaded[kvp.Key] != kvp.Value)
+                            {
+                                return false.Label($"Email mismatch for {kvp.Key}: expected {kvp.Value}, got {loaded[kvp.Key]}");
+                            }
+                        }
+
+                        return true.ToProperty();
+                    }
+                    catch (Exception ex)
+                    {
+                        return false.Label($"Round trip failed with exception: {ex.Message}");
+                    }
+                    finally
+                    {
+                        // Cleanup - Remove temporary test directory
+                        if (Directory.Exists(tempDir))
+                        {
+                            try
+                            {
+                                Directory.Delete(tempDir, recursive: true);
+                            }
+                            catch
+                            {
+                                // Ignore cleanup errors
+                            }
+                        }
+                    }
+                }
+            ).Check(config);
+        }
+
         // Feature: volunteer-email-notifications, Property 19: Add Contact Increases Count
         /// <summary>
         /// Property 19: Add Contact Increases Count

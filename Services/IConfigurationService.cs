@@ -22,6 +22,12 @@ public interface IConfigurationService
     /// <summary>
     /// Gets the default configuration file path.
     /// </summary>
-    /// <returns>Path to config.json in user's AppData folder</returns>
+    /// <returns>Path to config.json in the application's data folder</returns>
     string GetConfigFilePath();
+    
+    /// <summary>
+    /// Ensures the data folder exists, creating it if necessary.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when the data folder cannot be created due to insufficient permissions or disk space issues.</exception>
+    void EnsureDataFolderExists();
 }

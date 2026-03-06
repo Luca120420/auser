@@ -61,7 +61,7 @@ namespace AuserExcelTransformer.UI
         private void InitializeCustomComponents()
         {
             this.Size = new Size(800, 600);
-            this.AutoScroll = true;
+            this.AutoScroll = false; // Disable panel scrolling - let MainForm handle scrolling
             
             InitializeVolunteerContactsSection();
             InitializeGmailCredentialsSection();

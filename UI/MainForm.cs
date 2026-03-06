@@ -54,7 +54,7 @@ namespace AuserExcelTransformer.UI
                 // Create service instances (Requirement 10.2)
                 var volunteerManager = new VolunteerManager();
                 var emailService = new EmailService();
-                var configurationService = new ConfigurationService();
+                var configurationService = new ConfigurationService(volunteerManager);
                 var excelManager = new ExcelManager();
                 
                 // Create a simple wrapper that will hold the panel reference
@@ -74,14 +74,13 @@ namespace AuserExcelTransformer.UI
                 wrapper.Panel = panel; // Set the actual panel in the wrapper
                 
                 // Add panel to form layout below existing transformation controls (Requirement 10.1)
-                panel.Location = new Point(20, 350);
-                panel.Size = new Size(800, 600);
-                panel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+                panel.Location = new Point(20, 275); // Reduced spacing from status label
+                panel.Size = new Size(this.ClientSize.Width - 40, 620); // Increased height to accommodate all controls
+                panel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
                 this.Controls.Add(panel);
                 
-                // Adjust form size to accommodate volunteer panel (Requirement 10.1)
-                this.Size = new Size(850, 1000);
-                this.AutoScroll = true;
+                // Form size is already set in InitializeCustomComponents to accommodate volunteer panel
+                // No need to adjust size here
                 
                 // Trigger display of loaded configuration now that panel is ready (Requirement 10.3)
                 // The controller already loaded the configuration in its constructor,
@@ -153,10 +152,14 @@ namespace AuserExcelTransformer.UI
         {
             // Set form properties
             this.Text = Properties.Resources.ApplicationTitle;
-            this.Size = new Size(600, 400);
-            this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.MinimumSize = new Size(600, 400);
+            this.MaximizeBox = true;
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.AutoScroll = true; // Enable vertical scrolling when content exceeds visible area
+            
+            // Set initial size to accommodate all controls including VolunteerPanel
+            this.Size = new Size(850, 1000);
             
             // Initialize CSV file selection button
             btnSelectCSV = new Button
@@ -164,7 +167,8 @@ namespace AuserExcelTransformer.UI
                 Text = Properties.Resources.SelectCSVButton,
                 Location = new Point(20, 20),
                 Size = new Size(200, 40),
-                Font = new Font("Segoe UI", 10F)
+                Font = new Font("Segoe UI", 10F),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
             btnSelectCSV.Click += BtnSelectCSV_Click;
             this.Controls.Add(btnSelectCSV);
@@ -184,9 +188,10 @@ namespace AuserExcelTransformer.UI
             {
                 Text = "",
                 Location = new Point(120, 70),
-                Size = new Size(450, 20),
+                Size = new Size(this.ClientSize.Width - 140, 20), // Dynamic width based on form size
                 Font = new Font("Segoe UI", 9F),
-                ForeColor = Color.DarkBlue
+                ForeColor = Color.DarkBlue,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
             this.Controls.Add(lblCSVPath);
             
@@ -196,7 +201,8 @@ namespace AuserExcelTransformer.UI
                 Text = Properties.Resources.SelectExcelButton,
                 Location = new Point(20, 100),
                 Size = new Size(200, 40),
-                Font = new Font("Segoe UI", 10F)
+                Font = new Font("Segoe UI", 10F),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
             btnSelectExcel.Click += BtnSelectExcel_Click;
             this.Controls.Add(btnSelectExcel);
@@ -216,9 +222,10 @@ namespace AuserExcelTransformer.UI
             {
                 Text = "",
                 Location = new Point(120, 150),
-                Size = new Size(450, 20),
+                Size = new Size(this.ClientSize.Width - 140, 20), // Dynamic width based on form size
                 Font = new Font("Segoe UI", 9F),
-                ForeColor = Color.DarkBlue
+                ForeColor = Color.DarkBlue,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
             this.Controls.Add(lblExcelPath);
             
@@ -229,7 +236,8 @@ namespace AuserExcelTransformer.UI
                 Location = new Point(20, 190),
                 Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                Enabled = false
+                Enabled = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
             btnProcess.Click += BtnProcess_Click;
             this.Controls.Add(btnProcess);
@@ -241,7 +249,8 @@ namespace AuserExcelTransformer.UI
                 Location = new Point(240, 190),
                 Size = new Size(200, 40),
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                Enabled = false
+                Enabled = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left
             };
             btnDownload.Click += BtnDownload_Click;
             this.Controls.Add(btnDownload);
@@ -251,9 +260,10 @@ namespace AuserExcelTransformer.UI
             {
                 Text = "",
                 Location = new Point(20, 250),
-                Size = new Size(550, 80),
+                Size = new Size(this.ClientSize.Width - 40, 20), // Reduced height from 40 to 20
                 Font = new Font("Segoe UI", 9F),
-                AutoSize = false
+                AutoSize = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
             this.Controls.Add(lblStatus);
         }

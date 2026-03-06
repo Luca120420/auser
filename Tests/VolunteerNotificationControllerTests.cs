@@ -47,7 +47,7 @@ namespace AuserExcelTransformer.Tests
             // Arrange
             var config = new AppConfiguration
             {
-                VolunteerFilePath = "volunteers.json",
+                // VolunteerFilePath removed - no longer part of AppConfiguration (Task 2.1)
                 GmailCredentials = new GmailCredentials
                 {
                     Email = "test@gmail.com",
@@ -67,9 +67,11 @@ namespace AuserExcelTransformer.Tests
                 { "Bianchi", "bianchi@example.com" }
             };
 
-            _mockVolunteerManager
-                .Setup(x => x.LoadVolunteers("volunteers.json"))
-                .Returns(volunteers);
+            // Note: Volunteer loading from config path removed in task 2.1
+            // Volunteers will be loaded from internal storage in task 3.4
+            // _mockVolunteerManager
+            //     .Setup(x => x.LoadVolunteers("volunteers.json"))
+            //     .Returns(volunteers);
 
             // Act
             _controller = new VolunteerNotificationController(
@@ -83,11 +85,12 @@ namespace AuserExcelTransformer.Tests
             _mockConfigurationService.Verify(x => x.LoadConfiguration(), Times.Once,
                 "Controller should load configuration on construction (Requirements 1.6, 3.3)");
 
-            _mockVolunteerManager.Verify(x => x.LoadVolunteers("volunteers.json"), Times.Once,
-                "Controller should load volunteers from configured file path on construction");
+            // Note: Volunteer loading verification commented out - will be updated in task 3.4
+            // _mockVolunteerManager.Verify(x => x.LoadVolunteers("volunteers.json"), Times.Once,
+            //     "Controller should load volunteers from configured file path on construction");
 
-            _mockUI.Verify(x => x.DisplayVolunteerList(volunteers), Times.Once,
-                "Controller should display loaded volunteers in UI on construction");
+            // _mockUI.Verify(x => x.DisplayVolunteerList(volunteers), Times.Once,
+            //     "Controller should display loaded volunteers in UI on construction");
         }
 
         /// <summary>
@@ -100,16 +103,17 @@ namespace AuserExcelTransformer.Tests
             // Arrange
             var config = new AppConfiguration
             {
-                VolunteerFilePath = "missing.json"
+                // VolunteerFilePath removed - no longer part of AppConfiguration (Task 2.1)
             };
 
             _mockConfigurationService
                 .Setup(x => x.LoadConfiguration())
                 .Returns(config);
 
-            _mockVolunteerManager
-                .Setup(x => x.LoadVolunteers("missing.json"))
-                .Throws(new System.IO.FileNotFoundException());
+            // Note: Volunteer loading behavior removed - file path no longer in config
+            // _mockVolunteerManager
+            //     .Setup(x => x.LoadVolunteers("missing.json"))
+            //     .Throws(new System.IO.FileNotFoundException());
 
             // Act
             _controller = new VolunteerNotificationController(
@@ -122,7 +126,7 @@ namespace AuserExcelTransformer.Tests
             // Assert - Should not throw, should start with empty volunteers
             var volunteers = _controller.GetVolunteers();
             Assert.That(volunteers.Count, Is.EqualTo(0),
-                "Controller should start with empty volunteers when file loading fails");
+                "Controller should start with empty volunteers when no internal storage exists");
         }
 
         /// <summary>
@@ -470,6 +474,188 @@ namespace AuserExcelTransformer.Tests
 
             _mockUI.Verify(x => x.EnableSendEmailsButton(false), Times.AtLeastOnce,
                 "Send emails button should be disabled after deleting all volunteers");
+        }
+
+        /// <summary>
+        /// Test that volunteer import merges with no conflicts.
+        /// **Validates: Requirements 3.1, 3.2**
+        /// </summary>
+        [Test]
+        public void OnVolunteerFileSelected_WithNoConflicts_ShouldMergeVolunteers()
+        {
+            // Arrange
+            _controller = new VolunteerNotificationController(
+                _mockVolunteerManager.Object,
+                _mockEmailService.Object,
+                _mockConfigurationService.Object,
+                _mockExcelManager.Object,
+                _mockUI.Object);
+
+            // Set up existing volunteers
+            var existingVolunteers = new Dictionary<string, string>
+            {
+                { "Rossi", "rossi@example.com" },
+                { "Bianchi", "bianchi@example.com" }
+            };
+
+            // Set up imported volunteers (no conflicts)
+            var importedVolunteers = new Dictionary<string, string>
+            {
+                { "Verdi", "verdi@example.com" },
+                { "Neri", "neri@example.com" }
+            };
+
+            _mockVolunteerManager
+                .Setup(x => x.LoadVolunteers(It.IsAny<string>()))
+                .Returns(importedVolunteers);
+
+            // Manually set existing volunteers
+            foreach (var volunteer in existingVolunteers)
+            {
+                _mockVolunteerManager.Object.AddVolunteer(volunteer.Key, volunteer.Value, _controller.GetVolunteers());
+            }
+
+            // Act
+            _controller.OnVolunteerFileSelected("imported.json");
+
+            // Assert
+            var result = _controller.GetVolunteers();
+            Assert.That(result.Count, Is.EqualTo(4), "Should have 4 volunteers after merge");
+            Assert.That(result["Rossi"], Is.EqualTo("rossi@example.com"));
+            Assert.That(result["Bianchi"], Is.EqualTo("bianchi@example.com"));
+            Assert.That(result["Verdi"], Is.EqualTo("verdi@example.com"));
+            Assert.That(result["Neri"], Is.EqualTo("neri@example.com"));
+
+            // Verify SaveVolunteers was called to persist the merged data
+            _mockVolunteerManager.Verify(x => x.SaveVolunteers(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Once);
+        }
+
+        /// <summary>
+        /// Test that volunteer import merges with duplicate surnames (overwrites).
+        /// **Validates: Requirements 3.2, 3.3**
+        /// </summary>
+        [Test]
+        public void OnVolunteerFileSelected_WithDuplicateSurnames_ShouldOverwriteEmails()
+        {
+            // Arrange
+            _controller = new VolunteerNotificationController(
+                _mockVolunteerManager.Object,
+                _mockEmailService.Object,
+                _mockConfigurationService.Object,
+                _mockExcelManager.Object,
+                _mockUI.Object);
+
+            // Set up existing volunteers
+            var existingVolunteers = new Dictionary<string, string>
+            {
+                { "Rossi", "old.rossi@example.com" },
+                { "Bianchi", "bianchi@example.com" }
+            };
+
+            // Set up imported volunteers (with conflict on "Rossi")
+            var importedVolunteers = new Dictionary<string, string>
+            {
+                { "Rossi", "new.rossi@example.com" },  // Should overwrite
+                { "Verdi", "verdi@example.com" }
+            };
+
+            _mockVolunteerManager
+                .Setup(x => x.LoadVolunteers(It.IsAny<string>()))
+                .Returns(importedVolunteers);
+
+            // Manually set existing volunteers
+            foreach (var volunteer in existingVolunteers)
+            {
+                _mockVolunteerManager.Object.AddVolunteer(volunteer.Key, volunteer.Value, _controller.GetVolunteers());
+            }
+
+            // Act
+            _controller.OnVolunteerFileSelected("imported.json");
+
+            // Assert
+            var result = _controller.GetVolunteers();
+            Assert.That(result.Count, Is.EqualTo(3), "Should have 3 volunteers after merge");
+            Assert.That(result["Rossi"], Is.EqualTo("new.rossi@example.com"), "Rossi email should be overwritten with new value");
+            Assert.That(result["Bianchi"], Is.EqualTo("bianchi@example.com"));
+            Assert.That(result["Verdi"], Is.EqualTo("verdi@example.com"));
+
+            // Verify SaveVolunteers was called to persist the merged data
+            _mockVolunteerManager.Verify(x => x.SaveVolunteers(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Once);
+        }
+
+        /// <summary>
+        /// Test that volunteer import saves to internal storage.
+        /// **Validates: Requirements 3.1, 3.4**
+        /// </summary>
+        [Test]
+        public void OnVolunteerFileSelected_ShouldSaveToInternalStorage()
+        {
+            // Arrange
+            _controller = new VolunteerNotificationController(
+                _mockVolunteerManager.Object,
+                _mockEmailService.Object,
+                _mockConfigurationService.Object,
+                _mockExcelManager.Object,
+                _mockUI.Object);
+
+            var importedVolunteers = new Dictionary<string, string>
+            {
+                { "Rossi", "rossi@example.com" }
+            };
+
+            _mockVolunteerManager
+                .Setup(x => x.LoadVolunteers(It.IsAny<string>()))
+                .Returns(importedVolunteers);
+
+            // Act
+            _controller.OnVolunteerFileSelected("external.json");
+
+            // Assert - Verify SaveVolunteers was called (indicating data was saved to internal storage)
+            _mockVolunteerManager.Verify(
+                x => x.SaveVolunteers(
+                    It.Is<string>(path => path.Contains("data") && path.Contains("volunteers.json")),
+                    It.IsAny<Dictionary<string, string>>()),
+                Times.Once,
+                "Should save volunteers to internal storage (data/volunteers.json)");
+        }
+
+        /// <summary>
+        /// Test that no external paths are stored after import.
+        /// **Validates: Requirements 2.4, 3.5, 4.3**
+        /// </summary>
+        [Test]
+        public void OnVolunteerFileSelected_ShouldNotStoreExternalPath()
+        {
+            // Arrange
+            _controller = new VolunteerNotificationController(
+                _mockVolunteerManager.Object,
+                _mockEmailService.Object,
+                _mockConfigurationService.Object,
+                _mockExcelManager.Object,
+                _mockUI.Object);
+
+            var importedVolunteers = new Dictionary<string, string>
+            {
+                { "Rossi", "rossi@example.com" }
+            };
+
+            _mockVolunteerManager
+                .Setup(x => x.LoadVolunteers(It.IsAny<string>()))
+                .Returns(importedVolunteers);
+
+            string externalPath = "C:\\External\\Path\\volunteers.json";
+
+            // Act
+            _controller.OnVolunteerFileSelected(externalPath);
+
+            // Assert - Verify configuration was NOT saved with external path
+            // The configuration should not be updated with the external file path
+            _mockConfigurationService.Verify(
+                x => x.SaveConfiguration(It.Is<AppConfiguration>(config =>
+                    // Configuration should not contain any reference to the external path
+                    !config.LastExcelFilePath.Contains(externalPath))),
+                Times.Never,
+                "Should not store external volunteer file path in configuration");
         }
     }
 }

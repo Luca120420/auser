@@ -176,8 +176,9 @@ namespace AuserExcelTransformer.Tests
         public void FormProperties_AreSetCorrectly()
         {
             // Assert
-            Assert.That(_form.FormBorderStyle, Is.EqualTo(System.Windows.Forms.FormBorderStyle.FixedDialog));
-            Assert.That(_form.MaximizeBox, Is.False);
+            Assert.That(_form.FormBorderStyle, Is.EqualTo(System.Windows.Forms.FormBorderStyle.Sizable));
+            Assert.That(_form.MaximizeBox, Is.True);
+            Assert.That(_form.MinimumSize, Is.EqualTo(new System.Drawing.Size(600, 400)));
             Assert.That(_form.StartPosition, Is.EqualTo(System.Windows.Forms.FormStartPosition.CenterScreen));
         }
     }

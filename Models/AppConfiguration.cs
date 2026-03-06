@@ -6,11 +6,6 @@ namespace AuserExcelTransformer.Models;
 public class AppConfiguration
 {
     /// <summary>
-    /// Path to volunteer JSON file.
-    /// </summary>
-    public string VolunteerFilePath { get; set; } = string.Empty;
-    
-    /// <summary>
     /// Gmail credentials for email sending.
     /// </summary>
     public GmailCredentials GmailCredentials { get; set; } = new GmailCredentials();
