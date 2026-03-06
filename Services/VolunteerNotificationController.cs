@@ -18,6 +18,7 @@ public class VolunteerNotificationController : IVolunteerNotificationController
     private readonly IConfigurationService _configurationService;
     private readonly IExcelManager _excelManager;
     private readonly IVolunteerUI _ui;
+    private readonly string _dataFolderPath;
 
     private Dictionary<string, string> _volunteers;
     private GmailCredentials _gmailCredentials;
@@ -34,18 +35,21 @@ public class VolunteerNotificationController : IVolunteerNotificationController
     /// <param name="configurationService">Service for persistent configuration storage</param>
     /// <param name="excelManager">Service for reading Excel files</param>
     /// <param name="ui">UI interface for displaying data and messages</param>
+    /// <param name="dataFolderPath">Optional custom data folder path for testing. If null, uses AppDomain.CurrentDomain.BaseDirectory/data</param>
     public VolunteerNotificationController(
         IVolunteerManager volunteerManager,
         IEmailService emailService,
         IConfigurationService configurationService,
         IExcelManager excelManager,
-        IVolunteerUI ui)
+        IVolunteerUI ui,
+        string dataFolderPath = null)
     {
         _volunteerManager = volunteerManager;
         _emailService = emailService;
         _configurationService = configurationService;
         _excelManager = excelManager;
         _ui = ui;
+        _dataFolderPath = dataFolderPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
 
         // Initialize state fields
         _volunteers = new Dictionary<string, string>();
@@ -189,37 +193,39 @@ public class VolunteerNotificationController : IVolunteerNotificationController
     }
 
     public void OnDeleteVolunteer(string surname)
-    {
-        try
         {
-            // Remove volunteer from the dictionary (Requirement 8.10)
-            _volunteerManager.RemoveVolunteer(surname, _volunteers);
-            
-            // Save updated volunteers to file (Requirement 8.11)
-            if (!string.IsNullOrEmpty(_volunteerFilePath))
+            try
             {
-                _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
+                // Remove volunteer from the dictionary (Requirement 8.10)
+                _volunteerManager.RemoveVolunteer(surname, _volunteers);
+
+                // Save updated volunteers to external file if path exists (Requirement 8.11)
+                if (!string.IsNullOrEmpty(_volunteerFilePath))
+                {
+                    _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
+                }
+
+                // Save updated volunteers to internal storage (volunteers.json)
+                SaveVolunteersToInternalStorage();
+
+                // Refresh UI volunteer list (Requirement 8.11)
+                _ui.DisplayVolunteerList(_volunteers);
+
+                // Update send emails button state (Requirement 5.1)
+                _ui.EnableSendEmailsButton(CanSendEmails());
             }
-            
-            // Volunteer data is now saved to internal storage (no config update needed)
-            
-            // Refresh UI volunteer list (Requirement 8.11)
-            _ui.DisplayVolunteerList(_volunteers);
-            
-            // Update send emails button state (Requirement 5.1)
-            _ui.EnableSendEmailsButton(CanSendEmails());
+            catch (IOException ex)
+            {
+                // Handle file save errors with Italian message
+                _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                // Handle any other unexpected errors with Italian message
+                _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            }
         }
-        catch (IOException ex)
-        {
-            // Handle file save errors with Italian message
-            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
-        }
-        catch (Exception ex)
-        {
-            // Handle any other unexpected errors with Italian message
-            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
-        }
-    }
+
 
     public void OnDeleteAllVolunteers()
     {
@@ -241,7 +247,8 @@ public class VolunteerNotificationController : IVolunteerNotificationController
                     _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
                 }
                 
-                // Volunteer data is now saved to internal storage (no config update needed)
+                // Save updated volunteers to internal storage (volunteers.json)
+                SaveVolunteersToInternalStorage();
                 
                 // Refresh UI volunteer list (Requirement 8.11)
                 _ui.DisplayVolunteerList(_volunteers);
@@ -568,8 +575,7 @@ public class VolunteerNotificationController : IVolunteerNotificationController
     /// <returns>The full path to the data folder</returns>
     private string GetDataFolderPath()
     {
-        string appFolder = AppDomain.CurrentDomain.BaseDirectory;
-        return Path.Combine(appFolder, "data");
+        return _dataFolderPath;
     }
 
 }
