@@ -158,6 +158,23 @@ namespace AuserExcelTransformer.UI
             this.StartPosition = FormStartPosition.CenterScreen;
             this.AutoScroll = true; // Enable vertical scrolling when content exceeds visible area
             
+            // Set application icon from embedded resource
+            try
+            {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                using (var stream = assembly.GetManifestResourceStream("AuserExcelTransformer.Resources.app_icon.ico"))
+                {
+                    if (stream != null)
+                    {
+                        this.Icon = new Icon(stream);
+                    }
+                }
+            }
+            catch
+            {
+                // If icon loading fails, continue without it
+            }
+            
             // Set initial size to accommodate all controls including VolunteerPanel
             this.Size = new Size(850, 1000);
             

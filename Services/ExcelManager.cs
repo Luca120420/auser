@@ -132,15 +132,68 @@ namespace AuserExcelTransformer.Services
         /// <param name="sheetNumber">The sheet number for naming</param>
         /// <returns>The newly created sheet</returns>
         public Sheet CreateNewSheet(ExcelWorkbookModel workbook, int sheetNumber)
-        {
-            if (workbook == null || workbook.Package == null)
-            {
-                throw new ArgumentNullException(nameof(workbook));
-            }
+                {
+                    if (workbook == null || workbook.Package == null)
+                    {
+                        throw new ArgumentNullException(nameof(workbook));
+                    }
 
-            var worksheet = workbook.Package.Workbook.Worksheets.Add(sheetNumber.ToString());
-            return new Sheet(worksheet);
-        }
+                    // Find the position to insert the new sheet
+                    // It should be right after the last numbered sheet (the one it's based on: n+1 after n)
+                    var worksheets = workbook.Package.Workbook.Worksheets;
+                    int insertPosition = 0; // Default: add at the beginning
+                    
+                    // Find the position of the sheet with number (sheetNumber - 1)
+                    // The new sheet should be inserted right after it
+                    string previousSheetName = (sheetNumber - 1).ToString();
+                    
+                    for (int i = 0; i < worksheets.Count; i++)
+                    {
+                        string sheetName = worksheets[i].Name;
+                        if (sheetName.Equals(previousSheetName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Found the previous numbered sheet, insert after it
+                            insertPosition = i + 1;
+                            break;
+                        }
+                    }
+                    
+                    // If we didn't find the previous sheet, find the last numbered sheet
+                    if (insertPosition == 0)
+                    {
+                        int lastNumberedSheetPosition = -1;
+                        
+                        for (int i = 0; i < worksheets.Count; i++)
+                        {
+                            string sheetName = worksheets[i].Name;
+                            // Check if this is a numbered sheet (1-53 range)
+                            if (int.TryParse(sheetName.Trim(), out int number))
+                            {
+                                if (number >= 1 && number <= 53)
+                                {
+                                    lastNumberedSheetPosition = i;
+                                }
+                            }
+                        }
+                        
+                        // Insert after the last numbered sheet, or at the beginning if none found
+                        insertPosition = lastNumberedSheetPosition + 1;
+                    }
+
+                    // Insert the new sheet at the calculated position
+                    var worksheet = worksheets.Add(sheetNumber.ToString());
+
+                    // Move the sheet to the correct position if needed
+                    if (insertPosition < worksheets.Count - 1)
+                    {
+                        // The sheet was added at the end, now move it to the correct position
+                        // EPPlus MoveBefore/MoveAfter methods use 0-based indexing
+                        worksheets.MoveBefore(worksheets.Count - 1, insertPosition);
+                    }
+
+                    return new Sheet(worksheet);
+                }
+
 
         /// <summary>
         /// Writes the header row (row 1) with dates, week number, and referente.
@@ -489,6 +542,186 @@ namespace AuserExcelTransformer.Services
         }
 
         /// <summary>
+        /// Appends data from the laboratori sheet to the target sheet.
+        /// Laboratori sheet has 10 columns (same as fissi plus an additional "Avv" column).
+        /// </summary>
+        public void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow)
+        {
+            if (targetSheet == null || targetSheet.Worksheet == null)
+            {
+                throw new ArgumentNullException(nameof(targetSheet));
+            }
+
+            if (laboratoriSheet == null || laboratoriSheet.Worksheet == null)
+            {
+                throw new ArgumentNullException(nameof(laboratoriSheet));
+            }
+
+            var laboratoriWorksheet = laboratoriSheet.Worksheet;
+            var targetWorksheet = targetSheet.Worksheet;
+
+            // Get the dimensions of the laboratori sheet
+            var laboratoriDimension = laboratoriWorksheet.Dimension;
+            if (laboratoriDimension == null)
+            {
+                return; // Empty sheet
+            }
+
+            // Detect where data starts in laboratori sheet
+            // Check if row 2 contains "Data" in cell A2 (column header)
+            int laboratoriDataStartRow = 3; // Default: skip rows 1 and 2
+
+            var row2Cell = laboratoriWorksheet.Cells[2, 1];
+            string row2Text = row2Cell.Text?.Trim() ?? string.Empty;
+
+            // If row 2 contains "Data", it's a column header row, so skip it and start from row 3
+            if (row2Text.Equals("Data", StringComparison.OrdinalIgnoreCase))
+            {
+                laboratoriDataStartRow = 3;
+            }
+            else
+            {
+                // If row 2 doesn't contain "Data", check row 1
+                var row1Cell = laboratoriWorksheet.Cells[1, 1];
+                string row1Text = row1Cell.Text?.Trim() ?? string.Empty;
+
+                if (row1Text.Equals("Data", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Row 1 is column headers, start from row 2
+                    laboratoriDataStartRow = 2;
+                }
+                else
+                {
+                    // Neither row 1 nor row 2 contains "Data", assume row 2 is data
+                    laboratoriDataStartRow = 2;
+                }
+            }
+
+            // Column mapping from laboratori (10 cols) to new structure (14 cols):
+            // Laboratori Col 1 (Data) → Target Col 1 (Data)
+            // Laboratori Col 2 (Partenza) → Target Col 2 (Ora Inizio Servizio)
+            // Laboratori Col 3 (Assistito) → Target Col 3 (Assistito)
+            // Laboratori Col 4 (Indirizzo) → Target Col 4 (Indirizzo)
+            // Laboratori Col 5 (Destinazione) → Target Col 5 (Destinazione)
+            // Laboratori Col 6 (Note) → Target Col 6 (Note)
+            // Laboratori Col 7 (Auto) → Target Col 7 (Auto)
+            // Laboratori Col 8 (Volontario) → Target Col 8 (Volontario)
+            // Laboratori Col 9 (Arrivo) → Target Col 9 (Arrivo)
+            // Laboratori Col 10 (Avv) → Target Col 10 (Avv)
+            // Target Cols 11-14 remain empty for other data sources
+
+            int[] columnMapping = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            // Copy data rows only (skip header rows)
+            int targetRow = startRow;
+            for (int sourceRow = laboratoriDataStartRow; sourceRow <= laboratoriDimension.End.Row; sourceRow++)
+            {
+                // Skip rows where column 1 (Data) is empty or null
+                var dataCell = laboratoriWorksheet.Cells[sourceRow, 1];
+                if (dataCell.Value == null || string.IsNullOrWhiteSpace(dataCell.Text))
+                {
+                    continue; // Skip this row
+                }
+
+                // Copy mapped columns from laboratori sheet
+                for (int laboratoriCol = 1; laboratoriCol <= Math.Min(10, laboratoriDimension.End.Column); laboratoriCol++)
+                {
+                    int targetCol = columnMapping[laboratoriCol - 1];
+
+                    var sourceCell = laboratoriWorksheet.Cells[sourceRow, laboratoriCol];
+                    var targetCell = targetWorksheet.Cells[targetRow, targetCol];
+
+                    // Special handling for time columns (2 = Partenza, 9 = Arrivo)
+                    if (laboratoriCol == 2 || laboratoriCol == 9)
+                    {
+                        // Handle different time formats in source data
+                        var sourceValue = sourceCell.Value;
+
+                        if (sourceValue is double || sourceValue is decimal)
+                        {
+                            // Already a numeric time value (fraction of a day)
+                            targetCell.Value = sourceValue;
+                        }
+                        else if (sourceValue is DateTime dt)
+                        {
+                            // DateTime object - convert to Excel time fraction
+                            targetCell.Value = dt.TimeOfDay.TotalDays;
+                        }
+                        else if (sourceValue is string strValue && !string.IsNullOrWhiteSpace(strValue))
+                        {
+                            // Text value - try to parse as time
+                            // Handle formats like "8.30.00", "8:30:00", "8:30", "08:30", etc.
+                            string normalizedTime = strValue.Trim()
+                                .Replace('.', ':')  // Convert dots to colons
+                                .Replace(',', ':'); // Convert commas to colons
+
+                            if (TimeSpan.TryParse(normalizedTime, out TimeSpan timeSpan))
+                            {
+                                // Convert TimeSpan to Excel time fraction (fraction of a day)
+                                targetCell.Value = timeSpan.TotalDays;
+                            }
+                            else
+                            {
+                                // Can't parse - copy as-is
+                                targetCell.Value = sourceValue;
+                            }
+                        }
+                        else
+                        {
+                            // Null or other type - copy as-is
+                            targetCell.Value = sourceValue;
+                        }
+                    }
+                    else
+                    {
+                        // Non-time columns - copy value as-is
+                        targetCell.Value = sourceCell.Value;
+                    }
+
+                    // Copy formatting (but NEVER copy background color to avoid yellow highlighting)
+                    if (sourceCell.Style != null)
+                    {
+                        // Copy font properties
+                        targetCell.Style.Font.Bold = sourceCell.Style.Font.Bold;
+                        targetCell.Style.Font.Italic = sourceCell.Style.Font.Italic;
+                        targetCell.Style.Font.Size = sourceCell.Style.Font.Size;
+                        targetCell.Style.Font.Name = sourceCell.Style.Font.Name;
+
+                        // Copy font color if set
+                        if (!string.IsNullOrEmpty(sourceCell.Style.Font.Color.Rgb))
+                        {
+                            var fontColorHex = sourceCell.Style.Font.Color.Rgb;
+                            targetCell.Style.Font.Color.SetColor(System.Drawing.ColorTranslator.FromHtml("#" + fontColorHex.Substring(2)));
+                        }
+
+                        // EXPLICITLY SKIP background color to avoid yellow highlighting
+                        // Do NOT copy: sourceCell.Style.Fill.PatternType and BackgroundColor
+
+                        // Copy borders
+                        targetCell.Style.Border.Top.Style = sourceCell.Style.Border.Top.Style;
+                        targetCell.Style.Border.Bottom.Style = sourceCell.Style.Border.Bottom.Style;
+                        targetCell.Style.Border.Left.Style = sourceCell.Style.Border.Left.Style;
+                        targetCell.Style.Border.Right.Style = sourceCell.Style.Border.Right.Style;
+
+                        // Copy number format (for dates and other formatted columns) - exclude time columns 2 and 9
+                        if (!string.IsNullOrEmpty(sourceCell.Style.Numberformat.Format) && laboratoriCol != 2 && laboratoriCol != 9)
+                        {
+                            targetCell.Style.Numberformat.Format = sourceCell.Style.Numberformat.Format;
+                        }
+
+                        // Always apply time format to columns 2 (Partenza) and 9 (Arrivo)
+                        if (laboratoriCol == 2 || laboratoriCol == 9)
+                        {
+                            targetCell.Style.Numberformat.Format = "h:mm";
+                        }
+                    }
+                }
+                targetRow++;
+            }
+        }
+
+
+        /// <summary>
         /// Applies yellow highlighting to the specified rows.
         /// </summary>
         /// <param name="sheet">The target sheet</param>
@@ -831,17 +1064,21 @@ namespace AuserExcelTransformer.Services
         /// <param name="sheetName">The name of the sheet to retrieve</param>
         /// <returns>The sheet with the specified name, or null if not found</returns>
         public Sheet GetSheetByName(ExcelWorkbookModel workbook, string sheetName)
-        {
-            if (workbook == null || workbook.Package == null)
-            {
-                throw new ArgumentNullException(nameof(workbook));
-            }
+                {
+                    if (workbook == null || workbook.Package == null)
+                    {
+                        throw new ArgumentNullException(nameof(workbook));
+                    }
 
-            var worksheet = workbook.Package.Workbook.Worksheets
-                .FirstOrDefault(ws => ws.Name.Equals(sheetName, StringComparison.OrdinalIgnoreCase));
+                    // Trim whitespace from the search name for more robust matching
+                    string trimmedSheetName = sheetName?.Trim() ?? string.Empty;
 
-            return worksheet != null ? new Sheet(worksheet) : null;
-        }
+                    var worksheet = workbook.Package.Workbook.Worksheets
+                        .FirstOrDefault(ws => ws.Name.Trim().Equals(trimmedSheetName, StringComparison.OrdinalIgnoreCase));
+
+                    return worksheet != null ? new Sheet(worksheet) : null;
+                }
+
 
         /// <summary>
         /// Reads the header text from the first row of a sheet.

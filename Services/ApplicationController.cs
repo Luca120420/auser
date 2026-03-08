@@ -318,8 +318,19 @@ namespace AuserExcelTransformer.Services
                 int fissiRowCountBefore = fissiStartRow;
                 _excelManager.AppendFissiData(newSheet, fissiSheet, fissiStartRow);
                 
-                // Calculate the last data row by checking the worksheet dimension
+                // Calculate the last data row after fissi
                 int lastDataRow = newSheet.Worksheet.Dimension?.End.Row ?? fissiStartRow - 1;
+                
+                // Step 10.25: Append laboratori data (if sheet exists)
+                Sheet laboratoriSheet = _excelManager.GetSheetByName(_workbook, "laboratori");
+                if (laboratoriSheet != null)
+                {
+                    int laboratoriStartRow = lastDataRow + 1;
+                    _excelManager.AppendLaboratoriData(newSheet, laboratoriSheet, laboratoriStartRow);
+                    
+                    // Update last data row to include laboratori data
+                    lastDataRow = newSheet.Worksheet.Dimension?.End.Row ?? lastDataRow;
+                }
                 
                 // Step 10.5: Sort all data rows by date and time (if there are data rows)
                 if (lastDataRow >= 3)

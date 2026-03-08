@@ -8,9 +8,10 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <AssemblyName>AuserGestioneTrasporti</AssemblyName>
     <RootNamespace>AuserExcelTransformer</RootNamespace>
-    <StartupObject>AuserExcelTransformer.Program</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <StartupObject>AuserExcelTransformer.Program</StartupObject>
+    <ApplicationIcon>Resources\app_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +28,20 @@
     <Compile Remove="Tests\**" />
     <EmbeddedResource Remove="Tests\**" />
     <None Remove="Tests\**" />
+    <Compile Remove="TestConsole\**" />
+    <Compile Remove="QuickTest\**" />
+    <Compile Remove="InspectFissi\**" />
+    <Compile Remove="InspectSheets\**" />
+    <Compile Remove="VerifyTimeFix\**" />
+    <Compile Remove="DiagnoseTransformation\**" />
+    <Compile Remove="InspectRealFile.cs" />
+    <Compile Remove="InspectRealFileSimple.cs" />
+    <Compile Remove="InspectPartenza.cs" />
+    <Compile Remove="TestTimeConversion.cs" />
+    <Compile Remove="TestHeaderRead.cs" />
+    <Compile Remove="TestFissiTime.cs" />
+    <Compile Remove="InspectExcel.cs" />
+    <Compile Remove="TestLaboratoriProcessing.cs" />
   </ItemGroup>
   
   <!-- Include only the new property test file -->
@@ -53,6 +68,11 @@
     <Compile Include="Tests\EmailServicePropertyTests.cs" />
     <Compile Include="Tests\EmailServiceTests.cs" />
     <Compile Include="Tests\ExcelManagerVolunteerPropertyTests.cs" />
+    <Compile Include="Tests\ExcelManagerLaboratoriPropertyTests.cs" />
+    <Compile Include="Tests\LaboratoriIntegrationTests.cs" />
+    <Compile Include="Tests\LaboratoriBugExplorationTests.cs" />
+    <Compile Include="Tests\LaboratoriDataPreservationTests.cs" />
+    <Compile Include="Tests\GetSheetByNameWhitespaceTest.cs" />
     <Compile Include="Tests\ExcelManagerTests.cs" />
     <Compile Include="Tests\VolunteerNotificationControllerPropertyTests.cs" />
     <Compile Include="Tests\VolunteerNotificationControllerTests.cs" />
@@ -62,12 +82,14 @@
     <Compile Include="Tests\MainFormResponsiveLayoutPropertyTests.cs" />
     <Compile Include="Tests\VolunteerDeletionPersistenceBugTests.cs" />
     <Compile Include="Tests\VolunteerDeletionPreservationTests.cs" />
+    <Compile Include="Tests\GUIInspectionModeBugExplorationTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="TestData\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="Resources\app_icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,6 +10,24 @@ $publishDir = "publish_portable_selfcontained"
 $packageDir = "package_temp_selfcontained"
 $zipFile = "auser_gestione_trasporti_portable.zip"
 
+# Clean up any existing publish directory
+if (Test-Path $publishDir) {
+    Write-Host "Cleaning up existing publish directory..." -ForegroundColor Yellow
+    Remove-Item -Path $publishDir -Recurse -Force
+}
+
+# Run dotnet publish to create self-contained build
+Write-Host "Publishing self-contained application..." -ForegroundColor Green
+Write-Host "This may take a few minutes..." -ForegroundColor Yellow
+dotnet publish AuserExcelTransformer.csproj -c Release -r win-x64 --self-contained true -o $publishDir
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Publish failed!" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Publish completed successfully!" -ForegroundColor Green
+
 # Clean up any existing package directory
 if (Test-Path $packageDir) {
     Write-Host "Cleaning up existing package directory..." -ForegroundColor Yellow

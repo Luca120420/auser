@@ -79,6 +79,15 @@ namespace AuserExcelTransformer.Services
         void AppendFissiData(Sheet targetSheet, Sheet fissiSheet, int startRow);
 
         /// <summary>
+        /// Appends data from the laboratori sheet to the target sheet, preserving formatting.
+        /// Laboratori sheet has 10 columns (same as fissi plus an additional "Avv" column).
+        /// </summary>
+        /// <param name="targetSheet">The sheet to append data to</param>
+        /// <param name="laboratoriSheet">The laboratori sheet to copy from</param>
+        /// <param name="startRow">Starting row number in target sheet (1-based)</param>
+        void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow);
+
+        /// <summary>
         /// Applies yellow highlighting to the specified rows.
         /// </summary>
         /// <param name="sheet">The target sheet</param>

@@ -118,8 +118,8 @@ InspectPartenza.cs
 *.csx
 
 # Packaged application
-auser.zip
-auser_gestione_trasporti_portable.zip
+*zip
 publish_portable/
 package_temp/
 TODO.txt
+build_output/

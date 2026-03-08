@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using AuserExcelTransformer.Services;
 using AuserExcelTransformer.UI;
@@ -15,13 +16,18 @@ namespace AuserExcelTransformer
         [STAThread]
         static void Main(string[] args)
         {
-            // Check for command-line arguments for debugging
-            if (args.Length > 0 && args[0] == "--inspect" && args.Length > 1)
+            // Debug: Log arguments to a file to see what's being passed
+            if (args.Length > 0)
             {
-                HeaderInspector.InspectFile(args[1]);
-                return;
+                try
+                {
+                    System.IO.File.WriteAllText("debug_args.txt", 
+                        $"Args count: {args.Length}\n" + 
+                        string.Join("\n", args.Select((a, i) => $"Arg[{i}]: {a}")));
+                }
+                catch { }
             }
-
+            
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             
