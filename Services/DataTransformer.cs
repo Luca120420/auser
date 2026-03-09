@@ -72,6 +72,12 @@ namespace AuserExcelTransformer.Services
                     continue;
                 }
 
+                // Skip rows where all fields are null or empty
+                if (IsEmptyRow(appointment))
+                {
+                    continue;
+                }
+
                 // Check if row should be highlighted yellow (Rule 1 from original transformation)
                 bool shouldHighlight = ShouldHighlightYellow(appointment);
 
@@ -113,6 +119,28 @@ namespace AuserExcelTransformer.Services
         }
 
         /// <summary>
+        /// Checks if all fields in the appointment are null or empty.
+        /// Returns true if the row should be excluded from the output.
+        /// </summary>
+        private bool IsEmptyRow(ServiceAppointment appointment)
+        {
+            return string.IsNullOrWhiteSpace(appointment.DataServizio) &&
+                   string.IsNullOrWhiteSpace(appointment.OraInizioServizio) &&
+                   string.IsNullOrWhiteSpace(appointment.Attivita) &&
+                   string.IsNullOrWhiteSpace(appointment.DescrizioneStatoServizio) &&
+                   string.IsNullOrWhiteSpace(appointment.IndirizzoPartenza) &&
+                   string.IsNullOrWhiteSpace(appointment.ComunePartenza) &&
+                   string.IsNullOrWhiteSpace(appointment.DescrizionePuntoPartenza) &&
+                   string.IsNullOrWhiteSpace(appointment.IndirizzoDestinazione) &&
+                   string.IsNullOrWhiteSpace(appointment.ComuneDestinazione) &&
+                   string.IsNullOrWhiteSpace(appointment.CausaleDestinazione) &&
+                   string.IsNullOrWhiteSpace(appointment.CognomeAssistito) &&
+                   string.IsNullOrWhiteSpace(appointment.NomeAssistito) &&
+                   string.IsNullOrWhiteSpace(appointment.NoteERichieste);
+        }
+
+
+        /// <summary>
         /// Transforms a single service appointment into an enhanced transformed row.
         /// Performs lookups for Indirizzo, Note (from assistiti), and Avv (from fissi).
         /// Maps CSV Note field to NoteGasnet property.
@@ -132,6 +160,9 @@ namespace AuserExcelTransformer.Services
 
             // Create Indirizzo Gasnet (Rule 17 from original transformation)
             string indirizzoGasnet = CreateIndirizzoGasnetColumn(appointment);
+
+            // Create Note Gasnet by concatenating NOTE E RICHIESTE with DESCRIZIONE PUNTO PARTENZA
+            string noteGasnet = CreateNoteGasnetColumn(appointment);
 
             var row = new EnhancedTransformedRow
             {
@@ -168,8 +199,8 @@ namespace AuserExcelTransformer.Services
                 // Column 11: Indirizzo Gasnet
                 IndirizzoGasnet = indirizzoGasnet,
 
-                // Column 12: Note Gasnet (from CSV Note field - Requirement 7.2)
-                NoteGasnet = appointment.NoteERichieste ?? string.Empty
+                // Column 12: Note Gasnet (from CSV Note field + DESCRIZIONE PUNTO PARTENZA)
+                NoteGasnet = noteGasnet
             };
 
             return row;
@@ -237,6 +268,30 @@ namespace AuserExcelTransformer.Services
             if (!string.IsNullOrWhiteSpace(appointment.IndirizzoPartenza))
             {
                 parts.Add(appointment.IndirizzoPartenza.Trim());
+            }
+            
+            return string.Join(" ", parts);
+        }
+
+        /// <summary>
+        /// Creates the NOTE GASNET column by concatenating NOTE E RICHIESTE with DESCRIZIONE PUNTO PARTENZA.
+        /// If DESCRIZIONE PUNTO PARTENZA has a value other than null or empty, it is appended to NOTE E RICHIESTE.
+        /// </summary>
+        private string CreateNoteGasnetColumn(ServiceAppointment appointment)
+        {
+            var parts = new List<string>();
+            
+            // Add NOTE E RICHIESTE if present
+            if (!string.IsNullOrWhiteSpace(appointment.NoteERichieste))
+            {
+                parts.Add(appointment.NoteERichieste.Trim());
+            }
+            
+            // Add DESCRIZIONE PUNTO PARTENZA if present and not "null"
+            if (!string.IsNullOrWhiteSpace(appointment.DescrizionePuntoPartenza) && 
+                !appointment.DescrizionePuntoPartenza.Equals("null", StringComparison.OrdinalIgnoreCase))
+            {
+                parts.Add(appointment.DescrizionePuntoPartenza.Trim());
             }
             
             return string.Join(" ", parts);

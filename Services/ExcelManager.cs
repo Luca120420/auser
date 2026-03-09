@@ -444,6 +444,13 @@ namespace AuserExcelTransformer.Services
             int targetRow = startRow;
             for (int sourceRow = fissiDataStartRow; sourceRow <= fissiDimension.End.Row; sourceRow++)
             {
+                // Skip rows where column 1 (Data) is empty or null
+                var dataCell = fissiWorksheet.Cells[sourceRow, 1];
+                if (dataCell.Value == null || string.IsNullOrWhiteSpace(dataCell.Text))
+                {
+                    continue; // Skip this row
+                }
+
                 // Copy mapped columns from fissi sheet
                 for (int fissiCol = 1; fissiCol <= Math.Min(9, fissiDimension.End.Column); fissiCol++)
                 {
@@ -452,8 +459,39 @@ namespace AuserExcelTransformer.Services
                     var sourceCell = fissiWorksheet.Cells[sourceRow, fissiCol];
                     var targetCell = targetWorksheet.Cells[targetRow, targetCol];
 
+                    // Special handling for Data column (1) - calculate next week's same day
+                    if (fissiCol == 1)
+                    {
+                        var sourceValue = sourceCell.Value;
+                        DateTime sourceDate;
+                        
+                        // Parse the source date
+                        if (sourceValue is DateTime dt)
+                        {
+                            sourceDate = dt;
+                        }
+                        else if (sourceValue is double)
+                        {
+                            sourceDate = DateTime.FromOADate((double)sourceValue);
+                        }
+                        else if (DateTime.TryParse(sourceValue?.ToString(), out DateTime parsedDate))
+                        {
+                            sourceDate = parsedDate;
+                        }
+                        else
+                        {
+                            // Can't parse - copy as-is
+                            targetCell.Value = sourceValue;
+                            continue;
+                        }
+                        
+                        // Calculate next week's same day of week
+                        DateTime nextWeekDate = CalculateNextWeekSameDay(sourceDate);
+                        targetCell.Value = nextWeekDate;
+                        targetCell.Style.Numberformat.Format = "ddd dd mmm";
+                    }
                     // Special handling for time columns (2 = Partenza, 9 = Arrivo)
-                    if (fissiCol == 2 || fissiCol == 9)
+                    else if (fissiCol == 2 || fissiCol == 9)
                     {
                         // Handle different time formats in source data
                         var sourceValue = sourceCell.Value;
@@ -631,8 +669,39 @@ namespace AuserExcelTransformer.Services
                     var sourceCell = laboratoriWorksheet.Cells[sourceRow, laboratoriCol];
                     var targetCell = targetWorksheet.Cells[targetRow, targetCol];
 
+                    // Special handling for Data column (1) - calculate next week's same day
+                    if (laboratoriCol == 1)
+                    {
+                        var sourceValue = sourceCell.Value;
+                        DateTime sourceDate;
+                        
+                        // Parse the source date
+                        if (sourceValue is DateTime dt)
+                        {
+                            sourceDate = dt;
+                        }
+                        else if (sourceValue is double)
+                        {
+                            sourceDate = DateTime.FromOADate((double)sourceValue);
+                        }
+                        else if (DateTime.TryParse(sourceValue?.ToString(), out DateTime parsedDate))
+                        {
+                            sourceDate = parsedDate;
+                        }
+                        else
+                        {
+                            // Can't parse - copy as-is
+                            targetCell.Value = sourceValue;
+                            continue;
+                        }
+                        
+                        // Calculate next week's same day of week
+                        DateTime nextWeekDate = CalculateNextWeekSameDay(sourceDate);
+                        targetCell.Value = nextWeekDate;
+                        targetCell.Style.Numberformat.Format = "ddd dd mmm";
+                    }
                     // Special handling for time columns (2 = Partenza, 9 = Arrivo)
-                    if (laboratoriCol == 2 || laboratoriCol == 9)
+                    else if (laboratoriCol == 2 || laboratoriCol == 9)
                     {
                         // Handle different time formats in source data
                         var sourceValue = sourceCell.Value;
@@ -676,6 +745,12 @@ namespace AuserExcelTransformer.Services
                     {
                         // Non-time columns - copy value as-is
                         targetCell.Value = sourceCell.Value;
+                    }
+                    
+                    // Apply italic formatting to Assistito (col 3) and Indirizzo (col 4) from laboratori
+                    if (targetCol == 3 || targetCol == 4)
+                    {
+                        targetCell.Style.Font.Italic = true;
                     }
 
                     // Copy formatting (but NEVER copy background color to avoid yellow highlighting)
@@ -1394,6 +1469,30 @@ namespace AuserExcelTransformer.Services
 
                     return result;
                 }
+
+        /// <summary>
+        /// Calculates the next occurrence of the same day of the week from today's date.
+        /// For example, if the source date is a Friday (23/01/2026) and today is 09/03/2026 (Monday),
+        /// this returns the next Friday which is 13/03/2026.
+        /// </summary>
+        /// <param name="sourceDate">The source date from fissi/laboratori sheet</param>
+        /// <returns>The next occurrence of the same day of the week</returns>
+        private DateTime CalculateNextWeekSameDay(DateTime sourceDate)
+        {
+            DateTime today = DateTime.Today;
+            DayOfWeek sourceDayOfWeek = sourceDate.DayOfWeek;
+            
+            // Calculate days until the next occurrence of the same day of week
+            int daysUntilTarget = ((int)sourceDayOfWeek - (int)today.DayOfWeek + 7) % 7;
+            
+            // If the target day is today, move to next week
+            if (daysUntilTarget == 0)
+            {
+                daysUntilTarget = 7;
+            }
+            
+            return today.AddDays(daysUntilTarget);
+        }
 
     }
 }
