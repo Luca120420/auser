@@ -844,8 +844,8 @@ namespace AuserExcelTransformer.Tests
             public void WriteHeaderRow(Sheet sheet, DateTime mondayDate) { }
             public void WriteColumnHeaders(Sheet sheet) { }
             public void WriteDataRows(Sheet sheet, List<TransformedRow> rows, int startRow) { }
-            public void AppendFissiData(Sheet targetSheet, Sheet fissiSheet, int startRow) { }
-            public void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow) { }
+            public void AppendFissiData(Sheet targetSheet, Sheet fissiSheet, int startRow, DateTime targetWeekMonday) { }
+            public void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow, DateTime targetWeekMonday) { }
             public void ApplyYellowHighlight(Sheet sheet, List<int> rowNumbers) { }
             public void EnableAutoFilter(Sheet sheet) { }
             public void SaveWorkbook(ExcelWorkbook workbook, string filePath) { }

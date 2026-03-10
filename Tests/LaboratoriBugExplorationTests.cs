@@ -202,7 +202,7 @@ namespace AuserExcelTransformer.Tests
                     
                     // Append fissi data
                     int fissiStartRow = 3 + transformedResult.Rows.Count;
-                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                     
                     // Calculate last row after fissi
                     int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
@@ -223,7 +223,7 @@ namespace AuserExcelTransformer.Tests
                         int rowCountBefore = targetWorksheet.Dimension?.End.Row ?? 0;
                         Console.WriteLine($"  Entry: targetRow={laboratoriStartRow}, sourceRows={expectedNonEmptyRows}");
                         
-                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                         
                         int rowCountAfter = targetWorksheet.Dimension?.End.Row ?? 0;
                         Console.WriteLine($"  Exit: rowCountBefore={rowCountBefore}, rowCountAfter={rowCountAfter}");
@@ -451,7 +451,7 @@ namespace AuserExcelTransformer.Tests
                     
                     // Step 10: Append fissi data
                     int fissiStartRow = 3 + transformedResult.Rows.Count;
-                    _excelManager.AppendFissiData(newSheet, fissiSheetModel, fissiStartRow);
+                    _excelManager.AppendFissiData(newSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                     
                     // Calculate last row after fissi
                     int lastRowAfterFissi = newSheet.Worksheet.Dimension?.End.Row ?? fissiStartRow - 1;
@@ -475,7 +475,7 @@ namespace AuserExcelTransformer.Tests
                         int rowCountBefore = newSheet.Worksheet.Dimension?.End.Row ?? 0;
                         Console.WriteLine($"  Entry: targetRow={laboratoriStartRow}, expectedSourceRows=7");
                         
-                        _excelManager.AppendLaboratoriData(newSheet, laboratoriSheetModel, laboratoriStartRow);
+                        _excelManager.AppendLaboratoriData(newSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                         
                         int rowCountAfter = newSheet.Worksheet.Dimension?.End.Row ?? 0;
                         Console.WriteLine($"  Exit: rowCountBefore={rowCountBefore}, rowCountAfter={rowCountAfter}");
@@ -682,7 +682,7 @@ namespace AuserExcelTransformer.Tests
                 
                 // Append fissi data
                 int fissiStartRow = 3 + transformedResult.Rows.Count;
-                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                 
                 // Calculate last row after fissi
                 int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
@@ -703,7 +703,7 @@ namespace AuserExcelTransformer.Tests
                     int rowCountBefore = targetWorksheet.Dimension?.End.Row ?? 0;
                     Console.WriteLine($"  Entry: targetRow={laboratoriStartRow}, expectedSourceRows=7");
                     
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                     
                     int rowCountAfter = targetWorksheet.Dimension?.End.Row ?? 0;
                     Console.WriteLine($"  Exit: rowCountBefore={rowCountBefore}, rowCountAfter={rowCountAfter}");

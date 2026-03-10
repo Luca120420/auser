@@ -175,14 +175,14 @@ namespace AuserExcelTransformer.Tests
                 
                 // Append fissi data
                 int fissiStartRow = 3 + transformedResult.Rows.Count;
-                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                 
                 // Calculate last row after fissi
                 int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
                 
                 // Append laboratori data
                 int laboratoriStartRow = lastRowAfterFissi + 1;
-                _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                 
                 // Get final row count
                 int finalLastRow = targetWorksheet.Dimension?.End.Row ?? laboratoriStartRow - 1;
@@ -417,7 +417,7 @@ namespace AuserExcelTransformer.Tests
                 
                 // Append fissi data
                 int fissiStartRow = 3 + transformedResult.Rows.Count;
-                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                 
                 // Calculate last row after fissi
                 int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
@@ -429,7 +429,7 @@ namespace AuserExcelTransformer.Tests
                 if (laboratoriSheetModel != null)
                 {
                     int laboratoriStartRow = lastRowAfterFissi + 1;
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                 }
                 
                 // Get final row count
@@ -520,11 +520,11 @@ namespace AuserExcelTransformer.Tests
                 _excelManager.WriteDataRowsEnhanced(targetSheet, transformedResult.Rows, 3);
                 
                 int fissiStartRow = 3 + transformedResult.Rows.Count;
-                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                 
                 int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
                 int laboratoriStartRow = lastRowAfterFissi + 1;
-                _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                 
                 int finalLastRow = targetWorksheet.Dimension?.End.Row ?? laboratoriStartRow - 1;
 

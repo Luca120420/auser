@@ -316,7 +316,7 @@ namespace AuserExcelTransformer.Services
                 // Step 10: Append fissi data
                 int fissiStartRow = 3 + enhancedTransformationResult.Rows.Count;
                 int fissiRowCountBefore = fissiStartRow;
-                _excelManager.AppendFissiData(newSheet, fissiSheet, fissiStartRow);
+                _excelManager.AppendFissiData(newSheet, fissiSheet, fissiStartRow, nextMondayDate);
                 
                 // Calculate the last data row after fissi
                 int lastDataRow = newSheet.Worksheet.Dimension?.End.Row ?? fissiStartRow - 1;
@@ -326,7 +326,7 @@ namespace AuserExcelTransformer.Services
                 if (laboratoriSheet != null)
                 {
                     int laboratoriStartRow = lastDataRow + 1;
-                    _excelManager.AppendLaboratoriData(newSheet, laboratoriSheet, laboratoriStartRow);
+                    _excelManager.AppendLaboratoriData(newSheet, laboratoriSheet, laboratoriStartRow, nextMondayDate);
                     
                     // Update last data row to include laboratori data
                     lastDataRow = newSheet.Worksheet.Dimension?.End.Row ?? lastDataRow;

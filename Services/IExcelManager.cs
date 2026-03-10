@@ -76,7 +76,8 @@ namespace AuserExcelTransformer.Services
         /// <param name="targetSheet">The sheet to append data to</param>
         /// <param name="fissiSheet">The fissi sheet to copy from</param>
         /// <param name="startRow">Starting row number in target sheet (1-based)</param>
-        void AppendFissiData(Sheet targetSheet, Sheet fissiSheet, int startRow);
+        /// <param name="targetWeekMonday">The Monday date of the target week (from cell A1)</param>
+        void AppendFissiData(Sheet targetSheet, Sheet fissiSheet, int startRow, System.DateTime targetWeekMonday);
 
         /// <summary>
         /// Appends data from the laboratori sheet to the target sheet, preserving formatting.
@@ -85,7 +86,8 @@ namespace AuserExcelTransformer.Services
         /// <param name="targetSheet">The sheet to append data to</param>
         /// <param name="laboratoriSheet">The laboratori sheet to copy from</param>
         /// <param name="startRow">Starting row number in target sheet (1-based)</param>
-        void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow);
+        /// <param name="targetWeekMonday">The Monday date of the target week (from cell A1)</param>
+        void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow, System.DateTime targetWeekMonday);
 
         /// <summary>
         /// Applies yellow highlighting to the specified rows.

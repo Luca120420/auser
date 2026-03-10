@@ -132,7 +132,7 @@ namespace AuserExcelTransformer.Tests
                     _excelManager.WriteDataRowsEnhanced(targetSheet, transformedResult.Rows, 3);
                     
                     int fissiStartRow = 3 + transformedResult.Rows.Count;
-                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                     
                     int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
 
@@ -143,7 +143,7 @@ namespace AuserExcelTransformer.Tests
                     if (laboratoriSheetModel != null)
                     {
                         int laboratoriStartRow = lastRowAfterFissi + 1;
-                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                     }
                     
                     int finalLastRow = targetWorksheet.Dimension?.End.Row ?? lastRowAfterFissi;
@@ -264,7 +264,7 @@ namespace AuserExcelTransformer.Tests
                     _excelManager.WriteDataRowsEnhanced(targetSheet, transformedResult.Rows, 3);
                     
                     int fissiStartRow = 3 + transformedResult.Rows.Count;
-                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                     
                     int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
 
@@ -278,7 +278,7 @@ namespace AuserExcelTransformer.Tests
                         try
                         {
                             int laboratoriStartRow = lastRowAfterFissi + 1;
-                            _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                            _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                         }
                         catch (Exception)
                         {
@@ -373,7 +373,7 @@ namespace AuserExcelTransformer.Tests
 
                     // Act - Write headers and fissi data only (no CSV)
                     _excelManager.WriteColumnHeadersEnhanced(targetSheet);
-                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, 3);
+                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, 3, DateTime.Now);
                     
                     int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? 2;
 
@@ -384,7 +384,7 @@ namespace AuserExcelTransformer.Tests
                     if (laboratoriSheetModel != null)
                     {
                         int laboratoriStartRow = lastRowAfterFissi + 1;
-                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                     }
                     
                     int finalLastRow = targetWorksheet.Dimension?.End.Row ?? lastRowAfterFissi;
@@ -496,7 +496,7 @@ namespace AuserExcelTransformer.Tests
                     if (laboratoriSheetModel != null)
                     {
                         int laboratoriStartRow = lastRowAfterCSV + 1;
-                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                     }
                     
                     int finalLastRow = targetWorksheet.Dimension?.End.Row ?? lastRowAfterCSV;
@@ -577,7 +577,7 @@ namespace AuserExcelTransformer.Tests
 
                     // Act - Write headers and fissi data, then sort
                     _excelManager.WriteColumnHeadersEnhanced(targetSheet);
-                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, 3);
+                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, 3, DateTime.Now);
                     
                     int lastRow = targetWorksheet.Dimension?.End.Row ?? 2;
 
@@ -586,7 +586,7 @@ namespace AuserExcelTransformer.Tests
                     if (laboratoriSheetModel != null)
                     {
                         int laboratoriStartRow = lastRow + 1;
-                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                         lastRow = targetWorksheet.Dimension?.End.Row ?? lastRow;
                     }
 
@@ -700,7 +700,7 @@ namespace AuserExcelTransformer.Tests
                     bool exceptionThrown = false;
                     try
                     {
-                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1);
+                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1, DateTime.Now);
                     }
                     catch (Exception)
                     {
@@ -805,7 +805,7 @@ namespace AuserExcelTransformer.Tests
                     var targetSheet = new Sheet(targetWorksheet);
 
                     // Act - Append laboratori data
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1, DateTime.Now);
 
                     // Assert - Verify formatting is copied correctly
                     var targetCell = targetWorksheet.Cells[1, 1];
@@ -916,7 +916,7 @@ namespace AuserExcelTransformer.Tests
                     var targetSheet = new Sheet(targetWorksheet);
 
                     // Act - Append laboratori data
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1, DateTime.Now);
 
                     // Assert - Verify all data rows were copied (header in row 1 should be skipped)
                     var targetDimension = targetWorksheet.Dimension;
@@ -1040,7 +1040,7 @@ namespace AuserExcelTransformer.Tests
                     _excelManager.WriteDataRowsEnhanced(targetSheet, transformedResult.Rows, 3);
                     
                     int fissiStartRow = 3 + transformedResult.Rows.Count;
-                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow);
+                    _excelManager.AppendFissiData(targetSheet, fissiSheetModel, fissiStartRow, DateTime.Now);
                     
                     int lastRowAfterFissi = targetWorksheet.Dimension?.End.Row ?? fissiStartRow - 1;
 
@@ -1051,7 +1051,7 @@ namespace AuserExcelTransformer.Tests
                     if (laboratoriSheetModel != null)
                     {
                         int laboratoriStartRow = lastRowAfterFissi + 1;
-                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow);
+                        _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheetModel, laboratoriStartRow, DateTime.Now);
                     }
                     
                     int finalLastRow = targetWorksheet.Dimension?.End.Row ?? lastRowAfterFissi;

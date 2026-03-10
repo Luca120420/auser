@@ -169,8 +169,8 @@ namespace AuserExcelTransformer.Services
                 // Column 1: Data
                 Data = appointment.DataServizio,
 
-                // Column 2: Partenza (renamed from Ora Inizio Servizio)
-                Partenza = appointment.OraInizioServizio ?? string.Empty,
+                // Column 2: Partenza - Leave empty for CSV rows (fissi and laboratori rows keep their values)
+                Partenza = string.Empty,
 
                 // Column 3: Assistito
                 Assistito = assistitoName,

@@ -75,7 +75,7 @@ namespace AuserExcelTransformer.Tests
                         var targetSheet = new Sheet(targetWorksheet);
 
                         // Act
-                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                         // Assert - Verify columns 1-3 map correctly
                         var dataValue = targetWorksheet.Cells[1, 1].Value?.ToString();
@@ -123,7 +123,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Header row should be skipped, data should start in target row 1
                 Assert.That(targetWorksheet.Cells[1, 1].Value?.ToString(), Is.EqualTo("15/01/2024"),
@@ -150,7 +150,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Header row should be skipped, data should start in target row 1
                 Assert.That(targetWorksheet.Cells[1, 1].Value?.ToString(), Is.EqualTo("16/01/2024"),
@@ -172,7 +172,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Data should be copied starting from target row 1
                 Assert.That(targetWorksheet.Cells[1, 1].Value?.ToString(), Is.EqualTo("17/01/2024"),
@@ -230,7 +230,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify formatting is copied correctly
                 var targetCell = targetWorksheet.Cells[1, 1];
@@ -277,17 +277,17 @@ namespace AuserExcelTransformer.Tests
 
                 // Test null targetSheet
                 Assert.Throws<ArgumentNullException>(() =>
-                    _excelManager.AppendFissiData(null!, validSheet, 1),
+                    _excelManager.AppendFissiData(null!, validSheet, 1, DateTime.Now),
                     "Null targetSheet should throw ArgumentNullException");
 
                 // Test null fissiSheet
                 Assert.Throws<ArgumentNullException>(() =>
-                    _excelManager.AppendFissiData(validSheet, null!, 1),
+                    _excelManager.AppendFissiData(validSheet, null!, 1, DateTime.Now),
                     "Null fissiSheet should throw ArgumentNullException");
 
                 // Test both null
                 Assert.Throws<ArgumentNullException>(() =>
-                    _excelManager.AppendFissiData(null!, null!, 1),
+                    _excelManager.AppendFissiData(null!, null!, 1, DateTime.Now),
                     "Both null should throw ArgumentNullException");
             }
         }
@@ -316,7 +316,7 @@ namespace AuserExcelTransformer.Tests
 
                 // Act - Should return without processing
                 Assert.DoesNotThrow(() =>
-                    _excelManager.AppendFissiData(targetSheet, fissiSheet, 1),
+                    _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now),
                     "Empty sheet should not throw exception");
 
                 // Assert - Target sheet should remain empty
@@ -368,7 +368,7 @@ namespace AuserExcelTransformer.Tests
                         var targetSheet = new Sheet(targetWorksheet);
 
                         // Act
-                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                         // Assert - Verify all rows are mapped correctly
                         bool allRowsCorrect = true;

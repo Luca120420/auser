@@ -374,7 +374,8 @@ namespace AuserExcelTransformer.Services
         /// <param name="targetSheet">The sheet to append data to</param>
         /// <param name="fissiSheet">The fissi sheet to copy from</param>
         /// <param name="startRow">Starting row number in target sheet (1-based)</param>
-        public void AppendFissiData(Sheet targetSheet, Sheet fissiSheet, int startRow)
+        /// <param name="targetWeekMonday">The Monday date of the target week (from cell A1)</param>
+        public void AppendFissiData(Sheet targetSheet, Sheet fissiSheet, int startRow, DateTime targetWeekMonday)
         {
             if (targetSheet == null || targetSheet.Worksheet == null)
             {
@@ -485,8 +486,8 @@ namespace AuserExcelTransformer.Services
                             continue;
                         }
                         
-                        // Calculate next week's same day of week
-                        DateTime nextWeekDate = CalculateNextWeekSameDay(sourceDate);
+                        // Calculate the same day of week within the target week range
+                        DateTime nextWeekDate = CalculateNextWeekSameDay(sourceDate, targetWeekMonday);
                         targetCell.Value = nextWeekDate;
                         targetCell.Style.Numberformat.Format = "ddd dd mmm";
                     }
@@ -583,7 +584,7 @@ namespace AuserExcelTransformer.Services
         /// Appends data from the laboratori sheet to the target sheet.
         /// Laboratori sheet has 10 columns (same as fissi plus an additional "Avv" column).
         /// </summary>
-        public void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow)
+        public void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow, DateTime targetWeekMonday)
         {
             if (targetSheet == null || targetSheet.Worksheet == null)
             {
@@ -695,8 +696,8 @@ namespace AuserExcelTransformer.Services
                             continue;
                         }
                         
-                        // Calculate next week's same day of week
-                        DateTime nextWeekDate = CalculateNextWeekSameDay(sourceDate);
+                        // Calculate the same day of week within the target week range
+                        DateTime nextWeekDate = CalculateNextWeekSameDay(sourceDate, targetWeekMonday);
                         targetCell.Value = nextWeekDate;
                         targetCell.Style.Numberformat.Format = "ddd dd mmm";
                     }
@@ -1472,26 +1473,22 @@ namespace AuserExcelTransformer.Services
 
         /// <summary>
         /// Calculates the next occurrence of the same day of the week from today's date.
-        /// For example, if the source date is a Friday (23/01/2026) and today is 09/03/2026 (Monday),
-        /// this returns the next Friday which is 13/03/2026.
+        /// For example, if the source date is a Friday (23/01/2026) and the target week starts on Monday 02/02/2026,
+        /// this returns Friday 06/02/2026 (the Friday within that week range).
         /// </summary>
         /// <param name="sourceDate">The source date from fissi/laboratori sheet</param>
-        /// <returns>The next occurrence of the same day of the week</returns>
-        private DateTime CalculateNextWeekSameDay(DateTime sourceDate)
+        /// <param name="targetWeekMonday">The Monday date (from cell A1) that starts the target week</param>
+        /// <returns>The date with the same day of week within the target week</returns>
+        private DateTime CalculateNextWeekSameDay(DateTime sourceDate, DateTime targetWeekMonday)
         {
-            DateTime today = DateTime.Today;
             DayOfWeek sourceDayOfWeek = sourceDate.DayOfWeek;
             
-            // Calculate days until the next occurrence of the same day of week
-            int daysUntilTarget = ((int)sourceDayOfWeek - (int)today.DayOfWeek + 7) % 7;
+            // Calculate how many days from Monday to the target day of week
+            // Monday = 1, Tuesday = 2, ..., Sunday = 0
+            int daysFromMonday = ((int)sourceDayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
             
-            // If the target day is today, move to next week
-            if (daysUntilTarget == 0)
-            {
-                daysUntilTarget = 7;
-            }
-            
-            return today.AddDays(daysUntilTarget);
+            // Add those days to the target week's Monday to get the correct date
+            return targetWeekMonday.AddDays(daysFromMonday);
         }
 
     }

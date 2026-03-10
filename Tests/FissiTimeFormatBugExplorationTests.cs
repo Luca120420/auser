@@ -67,7 +67,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act - Call AppendFissiData on UNFIXED code
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify CORRECT behavior (will fail on unfixed code)
                 var targetCell = targetWorksheet.Cells[1, 2];
@@ -123,7 +123,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act - Call AppendFissiData on UNFIXED code
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify CORRECT behavior (will fail on unfixed code)
                 var targetCell = targetWorksheet.Cells[1, 9];
@@ -172,7 +172,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert
                 var targetCell = targetWorksheet.Cells[1, 2];
@@ -217,7 +217,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert
                 var targetCell = targetWorksheet.Cells[1, 9];
@@ -276,7 +276,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Check all rows
                 for (int row = 1; row <= 3; row++)

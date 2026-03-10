@@ -83,7 +83,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act - Call AppendFissiData on UNFIXED code
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify CORRECT mapping (will fail on unfixed code)
                 
@@ -210,7 +210,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Check both rows
                 for (int row = 1; row <= 2; row++)

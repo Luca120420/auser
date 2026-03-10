@@ -289,7 +289,7 @@ namespace AuserExcelTransformer.Tests
             _mockExcelManager.Verify(m => m.CreateNewSheet(It.IsAny<ExcelWorkbook>(), It.IsAny<int>()), Times.Once);
             _mockExcelManager.Verify(m => m.WriteHeader(It.IsAny<Sheet>(), It.IsAny<string>()), Times.Once);
             _mockExcelManager.Verify(m => m.WriteDataRows(It.IsAny<Sheet>(), It.IsAny<List<TransformedRow>>(), 2), Times.Once);
-            _mockExcelManager.Verify(m => m.AppendFissiData(It.IsAny<Sheet>(), It.IsAny<Sheet>(), It.IsAny<int>()), Times.Once);
+            _mockExcelManager.Verify(m => m.AppendFissiData(It.IsAny<Sheet>(), It.IsAny<Sheet>(), It.IsAny<int>(, DateTime.Now)), Times.Once);
             _mockExcelManager.Verify(m => m.ApplyYellowHighlight(It.IsAny<Sheet>(), It.IsAny<List<int>>()), Times.Once);
             _mockGui.Verify(g => g.EnableDownloadButton(true), Times.Once);
             Assert.That(_controller.CanDownload, Is.True);

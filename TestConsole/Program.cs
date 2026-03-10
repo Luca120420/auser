@@ -91,7 +91,7 @@ class Program
             // Append fissi data
             int fissiStartRow = 3 + result.Rows.Count;
             Console.WriteLine($"Appending fissi data at row {fissiStartRow}...");
-            excelManager.AppendFissiData(newSheet, fissiSheet, fissiStartRow);
+            excelManager.AppendFissiData(newSheet, fissiSheet, fissiStartRow, DateTime.Now);
             
             // Apply yellow highlighting
             var adjustedHighlightRows = result.YellowHighlightRows.Select(r => r + 2).ToList();

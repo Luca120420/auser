@@ -171,10 +171,8 @@ namespace AuserExcelTransformer.Tests
                         if (laboratoriSheet != null)
                         {
                             _excelManager.AppendLaboratoriData(
-                                new Sheet(targetSheet), 
-                                laboratoriSheet, 
-                                nextRow
-                            );
+                                new Sheet(targetSheet), laboratoriSheet, nextRow
+                            , DateTime.Now);
                         }
                         // If laboratoriSheet is null, we simply skip the append - no error
                     }
@@ -311,7 +309,7 @@ namespace AuserExcelTransformer.Tests
                     var targetSheet = new Sheet(targetWorksheet);
 
                     // Act - Append laboratori data starting at row 1
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1, DateTime.Now);
 
                     // Assert - Count how many rows were actually written to target
                     var targetDimension = targetWorksheet.Dimension;
@@ -448,7 +446,7 @@ namespace AuserExcelTransformer.Tests
                     var targetSheet = new Sheet(targetWorksheet);
 
                     // Act - Append laboratori data starting at row 1
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1, DateTime.Now);
 
                     // Assert - Verify that exactly dataRowCount rows were written
                     var targetDimension = targetWorksheet.Dimension;
@@ -613,7 +611,7 @@ namespace AuserExcelTransformer.Tests
                     var targetSheet = new Sheet(targetWorksheet);
 
                     // Act - Append laboratori data starting at row 1
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1, DateTime.Now);
 
                     // Assert - Count how many rows were actually written to target
                     var targetDimension = targetWorksheet.Dimension;
@@ -787,7 +785,7 @@ namespace AuserExcelTransformer.Tests
                     var targetSheet = new Sheet(targetWorksheet);
 
                     // Act - Append laboratori data starting at row 1
-                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1);
+                    _excelManager.AppendLaboratoriData(targetSheet, laboratoriSheet, 1, DateTime.Now);
 
                     // Assert - Verify all columns are mapped correctly
                     var targetDimension = targetWorksheet.Dimension;

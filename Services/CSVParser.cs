@@ -56,37 +56,64 @@ namespace AuserExcelTransformer.Services
 
             var appointments = new List<ServiceAppointment>();
 
-            try
+            // Try multiple encodings to handle different CSV sources
+            var encodingsToTry = new[]
             {
-                // Configure CsvHelper to use UTF-8 encoding for Italian character support
-                // Italian CSV files typically use semicolon as delimiter
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    Encoding = Encoding.UTF8,
-                    Delimiter = ";", // Italian CSV files use semicolon delimiter
-                    HasHeaderRecord = true,
-                    TrimOptions = TrimOptions.Trim,
-                    MissingFieldFound = null, // Don't throw on missing fields
-                    BadDataFound = null // Handle bad data gracefully
-                };
+                Encoding.UTF8,
+                Encoding.GetEncoding("ISO-8859-1"), // Latin-1, common for Italian files
+                Encoding.GetEncoding(1252), // Windows-1252, Western European
+                Encoding.Default // System default encoding
+            };
 
-                using (var reader = new StreamReader(filePath, Encoding.UTF8))
-                using (var csv = new CsvReader(reader, config))
-                {
-                    // Register the class map for ServiceAppointment
-                    csv.Context.RegisterClassMap<ServiceAppointmentMap>();
+            Exception lastException = null;
 
-                    // Read all records
-                    appointments = csv.GetRecords<ServiceAppointment>().ToList();
+            foreach (var encoding in encodingsToTry)
+            {
+                try
+                {
+                    // Configure CsvHelper with the current encoding
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                    {
+                        Encoding = encoding,
+                        Delimiter = ";", // Italian CSV files use semicolon delimiter
+                        HasHeaderRecord = true,
+                        TrimOptions = TrimOptions.Trim,
+                        MissingFieldFound = null, // Don't throw on missing fields
+                        BadDataFound = null // Handle bad data gracefully
+                    };
+
+                    using (var reader = new StreamReader(filePath, encoding, true)) // detectEncodingFromByteOrderMarks = true
+                    using (var csv = new CsvReader(reader, config))
+                    {
+                        // Register the class map for ServiceAppointment
+                        csv.Context.RegisterClassMap<ServiceAppointmentMap>();
+
+                        // Read all records
+                        appointments = csv.GetRecords<ServiceAppointment>().ToList();
+                        
+                        // If we successfully read records, return them
+                        if (appointments.Count > 0)
+                        {
+                            return appointments;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    // Try next encoding
+                    continue;
                 }
             }
-            catch (CsvHelper.CsvHelperException ex)
+
+            // If all encodings failed, throw the last exception
+            if (lastException != null)
             {
-                throw new IOException($"Errore durante la lettura del file CSV: {ex.Message}", ex);
-            }
-            catch (Exception ex)
-            {
-                throw new IOException($"Impossibile leggere il file CSV: {ex.Message}", ex);
+                if (lastException is CsvHelper.CsvHelperException)
+                {
+                    throw new IOException($"Errore durante la lettura del file CSV: {lastException.Message}", lastException);
+                }
+                throw new IOException($"Impossibile leggere il file CSV: {lastException.Message}", lastException);
             }
 
             return appointments;
@@ -121,50 +148,82 @@ namespace AuserExcelTransformer.Services
                 return false;
             }
 
-            try
+            // Try multiple encodings to handle different CSV sources
+            var encodingsToTry = new[]
             {
-                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                Encoding.UTF8,
+                Encoding.GetEncoding("ISO-8859-1"), // Latin-1, common for Italian files
+                Encoding.GetEncoding(1252), // Windows-1252, Western European
+                Encoding.Default // System default encoding
+            };
+
+            foreach (var encoding in encodingsToTry)
+            {
+                try
                 {
-                    Encoding = Encoding.UTF8,
-                    Delimiter = ";", // Italian CSV files use semicolon delimiter
-                    HasHeaderRecord = true
-                };
-
-                using (var reader = new StreamReader(filePath, Encoding.UTF8))
-                using (var csv = new CsvReader(reader, config))
-                {
-                    // Read the header
-                    csv.Read();
-                    csv.ReadHeader();
-
-                    // Get all header names
-                    var headers = csv.HeaderRecord;
-
-                    if (headers == null)
+                    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                     {
-                        // No headers found - add all columns as missing
-                        missingColumns.AddRange(RequiredColumns);
-                        return false;
-                    }
+                        Encoding = encoding,
+                        Delimiter = ";", // Italian CSV files use semicolon delimiter
+                        HasHeaderRecord = true
+                    };
 
-                    // Check each required column and track which ones are missing
-                    foreach (var requiredColumn in RequiredColumns)
+                    using (var reader = new StreamReader(filePath, encoding, true)) // detectEncodingFromByteOrderMarks = true
+                    using (var csv = new CsvReader(reader, config))
                     {
-                        if (!headers.Contains(requiredColumn, StringComparer.OrdinalIgnoreCase))
+                        // Read the header
+                        csv.Read();
+                        csv.ReadHeader();
+
+                        // Get all header names
+                        var headers = csv.HeaderRecord;
+
+                        if (headers == null)
                         {
-                            missingColumns.Add(requiredColumn);
+                            // Try next encoding
+                            continue;
+                        }
+
+                        // Check each required column and track which ones are missing
+                        var tempMissingColumns = new List<string>();
+                        foreach (var requiredColumn in RequiredColumns)
+                        {
+                            if (!headers.Contains(requiredColumn, StringComparer.OrdinalIgnoreCase))
+                            {
+                                tempMissingColumns.Add(requiredColumn);
+                            }
+                        }
+
+                        // If we found all columns with this encoding, return success
+                        if (tempMissingColumns.Count == 0)
+                        {
+                            missingColumns = tempMissingColumns;
+                            return true;
+                        }
+
+                        // Keep track of the best result (fewest missing columns)
+                        if (missingColumns.Count == 0 || tempMissingColumns.Count < missingColumns.Count)
+                        {
+                            missingColumns = tempMissingColumns;
                         }
                     }
-
-                    return missingColumns.Count == 0;
+                }
+                catch
+                {
+                    // Try next encoding
+                    continue;
                 }
             }
-            catch
+
+            // If we get here, we didn't find all columns with any encoding
+            // Return false with the best result we found
+            if (missingColumns.Count == 0)
             {
-                // On any error, consider all columns as potentially missing
+                // No headers found with any encoding - add all columns as missing
                 missingColumns.AddRange(RequiredColumns);
-                return false;
             }
+            
+            return false;
         }
     }
 

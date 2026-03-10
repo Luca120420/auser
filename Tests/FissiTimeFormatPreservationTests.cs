@@ -83,7 +83,7 @@ namespace AuserExcelTransformer.Tests
                         var targetSheet = new Sheet(targetWorksheet);
 
                         // Act
-                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                         // Assert - Verify non-time columns preserve their values
                         var dataValue = targetWorksheet.Cells[1, 1].Value?.ToString();
@@ -148,7 +148,7 @@ namespace AuserExcelTransformer.Tests
                         var targetSheet = new Sheet(targetWorksheet);
 
                         // Act
-                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                         // Assert - Verify text values are preserved
                         var dataValue = targetWorksheet.Cells[1, 1].Value?.ToString();
@@ -195,7 +195,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify date format is preserved
                 var targetCell = targetWorksheet.Cells[1, 1];
@@ -244,7 +244,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify font properties are copied
                 var targetCell = targetWorksheet.Cells[1, 3];
@@ -293,7 +293,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify border properties are copied
                 var targetCell = targetWorksheet.Cells[1, 1];
@@ -355,7 +355,7 @@ namespace AuserExcelTransformer.Tests
                         var targetSheet = new Sheet(targetWorksheet);
 
                         // Act
-                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                        _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                         // Assert - Verify all rows maintain correct structure
                         bool allRowsCorrect = true;
@@ -414,7 +414,7 @@ namespace AuserExcelTransformer.Tests
                 var targetSheet = new Sheet(targetWorksheet);
 
                 // Act
-                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1);
+                _excelManager.AppendFissiData(targetSheet, fissiSheet, 1, DateTime.Now);
 
                 // Assert - Verify numeric format is preserved
                 var targetCell = targetWorksheet.Cells[1, 7];
