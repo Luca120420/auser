@@ -68,7 +68,8 @@ namespace AuserExcelTransformer.Services
             // Try multiple encodings to handle different CSV sources
             var encodingsToTry = new[]
             {
-                Encoding.UTF8,
+                new UTF8Encoding(true), // UTF-8 with BOM (most likely for Italian CSV files)
+                Encoding.UTF8, // UTF-8 without BOM
                 Encoding.GetEncoding("ISO-8859-1"), // Latin-1, common for Italian files
                 Encoding.GetEncoding(1252), // Windows-1252, Western European
                 Encoding.Default // System default encoding
@@ -160,7 +161,8 @@ namespace AuserExcelTransformer.Services
             // Try multiple encodings to handle different CSV sources
             var encodingsToTry = new[]
             {
-                Encoding.UTF8,
+                new UTF8Encoding(true), // UTF-8 with BOM (most likely for Italian CSV files)
+                Encoding.UTF8, // UTF-8 without BOM
                 Encoding.GetEncoding("ISO-8859-1"), // Latin-1, common for Italian files
                 Encoding.GetEncoding(1252), // Windows-1252, Western European
                 Encoding.Default // System default encoding
