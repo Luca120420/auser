@@ -39,6 +39,15 @@ namespace AuserExcelTransformer.Services
         };
 
         /// <summary>
+        /// Static constructor to register encoding provider for code page encodings
+        /// </summary>
+        static CSVParser()
+        {
+            // Register the code page encoding provider to support encodings like Windows-1252
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+
+        /// <summary>
         /// Parses a CSV file and returns a list of ServiceAppointment objects.
         /// Uses UTF-8 encoding to preserve Italian characters.
         /// </summary>
