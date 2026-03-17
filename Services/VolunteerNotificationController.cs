@@ -150,13 +150,8 @@ public class VolunteerNotificationController : IVolunteerNotificationController
             // This will throw ArgumentException if surname is empty or email is invalid
             _volunteerManager.AddVolunteer(surname, email, _volunteers);
             
-            // Save updated volunteers to file (Requirement 8.5)
-            if (!string.IsNullOrEmpty(_volunteerFilePath))
-            {
-                _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
-            }
-            
-            // Volunteer data is now saved to internal storage (no config update needed)
+            // Save updated volunteers to internal storage (Requirement 8.5)
+            SaveVolunteersToInternalStorage();
             
             // Refresh UI volunteer list (Requirement 8.11)
             _ui.DisplayVolunteerList(_volunteers);
@@ -273,21 +268,30 @@ public class VolunteerNotificationController : IVolunteerNotificationController
     {
         try
         {
-            // Update internal GmailCredentials object (Requirement 3.1)
+            // Update internal GmailCredentials object (in-memory only)
             _gmailCredentials.Email = email;
             _gmailCredentials.AppPassword = appPassword;
-            
-            // Save configuration to persist credentials (Requirements 3.2, 3.4)
-            var config = _configurationService.LoadConfiguration();
-            config.GmailCredentials = _gmailCredentials;
-            _configurationService.SaveConfiguration(config);
-            
+
             // Update CanSendEmails state to enable/disable send button (Requirement 5.1)
             _ui.EnableSendEmailsButton(CanSendEmails());
         }
         catch (Exception ex)
         {
             // Handle any errors with Italian message
+            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+        }
+    }
+
+    public void SaveGmailCredentials()
+    {
+        try
+        {
+            var config = _configurationService.LoadConfiguration();
+            config.GmailCredentials = _gmailCredentials;
+            _configurationService.SaveConfiguration(config);
+        }
+        catch (Exception ex)
+        {
             _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
         }
     }
@@ -536,6 +540,8 @@ public class VolunteerNotificationController : IVolunteerNotificationController
         try
         {
             string dataFolder = GetDataFolderPath();
+            if (!Directory.Exists(dataFolder))
+                Directory.CreateDirectory(dataFolder);
             string volunteersPath = Path.Combine(dataFolder, "volunteers.json");
             _volunteerManager.SaveVolunteers(volunteersPath, _volunteers);
         }

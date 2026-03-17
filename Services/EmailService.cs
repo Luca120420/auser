@@ -92,19 +92,19 @@ public class EmailService : IEmailService
         // Italian greeting
         body.AppendLine($"Gentile {volunteerSurname},");
         body.AppendLine();
-        body.AppendLine("Ecco i servizi a te assegnati:");
+        body.AppendLine("Ecco i trasporti a te assegnati:");
         body.AppendLine();
 
         // Format each assigned row
         for (int i = 0; i < assignedRows.Count; i++)
         {
             var row = assignedRows[i];
-            body.AppendLine($"Servizio {i + 1}:");
+            body.AppendLine($"Trasporto {i + 1}:");
 
             foreach (var column in row)
             {
-                // Skip excluded columns
-                if (!excludedColumns.Contains(column.Key))
+                // Skip excluded columns and empty values
+                if (!excludedColumns.Contains(column.Key) && !string.IsNullOrWhiteSpace(column.Value))
                 {
                     body.AppendLine($"  {column.Key}: {column.Value}");
                 }

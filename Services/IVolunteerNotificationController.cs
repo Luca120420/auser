@@ -35,11 +35,16 @@ public interface IVolunteerNotificationController
     void OnDeleteAllVolunteers();
     
     /// <summary>
-    /// Handles Gmail credentials update.
+    /// Handles Gmail credentials update (in-memory only, does not persist).
     /// </summary>
     /// <param name="email">Gmail email address</param>
     /// <param name="appPassword">Gmail application password</param>
     void OnGmailCredentialsUpdated(string email, string appPassword);
+
+    /// <summary>
+    /// Explicitly saves Gmail credentials to persistent storage.
+    /// </summary>
+    void SaveGmailCredentials();
     
     /// <summary>
     /// Handles clearing Gmail credentials.

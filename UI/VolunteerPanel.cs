@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -31,6 +31,8 @@ namespace AuserExcelTransformer.UI
         private Label lblGmailPassword = null!;
         private TextBox txtGmailPassword = null!;
         private Button btnClearCredentials = null!;
+        private Button btnSaveCredentials = null!;
+        private Button btnImportCredentials = null!;
         
         // Excel Selection Section
         private GroupBox grpExcelSelection = null!;
@@ -149,7 +151,7 @@ namespace AuserExcelTransformer.UI
             {
                 Text = "Credenziali Gmail",
                 Location = new Point(10, 220),
-                Size = new Size(780, 130),
+                Size = new Size(780, 140),
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold)
             };
             
@@ -204,6 +206,25 @@ namespace AuserExcelTransformer.UI
             };
             btnClearCredentials.Click += BtnClearCredentials_Click;
             grpGmailCredentials.Controls.Add(btnClearCredentials);
+            btnSaveCredentials = new Button
+            {
+                Text = "Salva Credenziali",
+                Location = new Point(210, 95),
+                Size = new Size(150, 30),
+                Font = new Font("Segoe UI", 9F)
+            };
+            btnSaveCredentials.Click += BtnSaveCredentials_Click;
+            grpGmailCredentials.Controls.Add(btnSaveCredentials);
+
+            btnImportCredentials = new Button
+            {
+                Text = "Importa Credenziali",
+                Location = new Point(385, 95),
+                Size = new Size(160, 30),
+                Font = new Font("Segoe UI", 9F)
+            };
+            btnImportCredentials.Click += BtnImportCredentials_Click;
+            grpGmailCredentials.Controls.Add(btnImportCredentials);
             
             this.Controls.Add(grpGmailCredentials);
         }
@@ -405,6 +426,40 @@ namespace AuserExcelTransformer.UI
         /// <summary>
         /// Handles Gmail email textbox text changed event.
         /// </summary>
+
+        private void BtnSaveCredentials_Click(object? sender, EventArgs e)
+        {
+            _controller.OnGmailCredentialsUpdated(txtGmailEmail.Text, txtGmailPassword.Text);
+            _controller.SaveGmailCredentials();
+            MessageBox.Show("Credenziali salvate.", "Salva Credenziali", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void BtnImportCredentials_Click(object? sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Importa Credenziali Gmail";
+                dialog.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
+                dialog.RestoreDirectory = true;
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        var json = System.IO.File.ReadAllText(dialog.FileName);
+                        using var doc = System.Text.Json.JsonDocument.Parse(json);
+                        var root = doc.RootElement;
+                        var email = root.GetProperty("email").GetString() ?? string.Empty;
+                        var password = root.GetProperty("password").GetString() ?? string.Empty;
+                        _controller.OnGmailCredentialsUpdated(email, password);
+                        DisplayGmailCredentials(email, password);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Errore nell'importazione: " + ex.Message, "Errore", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
         private void TxtGmailEmail_TextChanged(object? sender, EventArgs e)
         {
             _controller.OnGmailCredentialsUpdated(txtGmailEmail.Text, txtGmailPassword.Text);
