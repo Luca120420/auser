@@ -491,6 +491,16 @@ namespace AuserExcelTransformer.Services
                         targetCell.Value = nextWeekDate;
                         targetCell.Style.Numberformat.Format = "ddd dd mmm";
                     }
+                    // Col 4 (Indirizzo) - write VLOOKUP formula instead of static value
+                    else if (fissiCol == 4)
+                    {
+                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,2,FALSE)";
+                    }
+                    // Col 6 (Note) - write VLOOKUP formula instead of static value
+                    else if (fissiCol == 6)
+                    {
+                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,3,FALSE)";
+                    }
                     // Special handling for time columns (2 = Partenza, 9 = Arrivo)
                     else if (fissiCol == 2 || fissiCol == 9)
                     {
@@ -539,7 +549,8 @@ namespace AuserExcelTransformer.Services
                     }
 
                     // Copy formatting (but NEVER copy background color to avoid yellow highlighting)
-                    if (sourceCell.Style != null)
+                    // Skip formatting for formula cells (col 4 and 6)
+                    if (sourceCell.Style != null && fissiCol != 4 && fissiCol != 6)
                     {
                         // Copy font properties
                         targetCell.Style.Font.Bold = sourceCell.Style.Font.Bold;
@@ -701,6 +712,16 @@ namespace AuserExcelTransformer.Services
                         targetCell.Value = nextWeekDate;
                         targetCell.Style.Numberformat.Format = "ddd dd mmm";
                     }
+                    // Col 4 (Indirizzo) - write INDEX/MATCH formula instead of static value
+                    else if (laboratoriCol == 4)
+                    {
+                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,2,FALSE)";
+                    }
+                    // Col 6 (Note) - write VLOOKUP formula instead of static value
+                    else if (laboratoriCol == 6)
+                    {
+                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,3,FALSE)";
+                    }
                     // Special handling for time columns (2 = Partenza, 9 = Arrivo)
                     else if (laboratoriCol == 2 || laboratoriCol == 9)
                     {
@@ -755,7 +776,8 @@ namespace AuserExcelTransformer.Services
                     }
 
                     // Copy formatting (but NEVER copy background color to avoid yellow highlighting)
-                    if (sourceCell.Style != null)
+                    // Skip formatting copy for formula cells (col 4 and 6)
+                    if (sourceCell.Style != null && laboratoriCol != 4 && laboratoriCol != 6)
                     {
                         // Copy font properties
                         targetCell.Style.Font.Bold = sourceCell.Style.Font.Bold;
@@ -932,14 +954,14 @@ namespace AuserExcelTransformer.Services
                 // Column 3: Assistito
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.Assistito;
                 
-                // Column 4: Indirizzo (from assistiti lookup)
-                sheet.Worksheet.Cells[currentRow, col++].Value = row.Indirizzo;
+                // Column 4: Indirizzo - VLOOKUP formula
+                sheet.Worksheet.Cells[currentRow, col++].Formula = $"VLOOKUP(C{currentRow},assistiti!A:C,2,FALSE)";
                 
                 // Column 5: Destinazione
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.Destinazione;
                 
-                // Column 6: Note (from assistiti lookup)
-                sheet.Worksheet.Cells[currentRow, col++].Value = row.Note;
+                // Column 6: Note - VLOOKUP formula
+                sheet.Worksheet.Cells[currentRow, col++].Formula = $"VLOOKUP(C{currentRow},assistiti!A:C,3,FALSE)";
                 
                 // Column 7: Auto
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.Auto;
@@ -993,7 +1015,8 @@ namespace AuserExcelTransformer.Services
             try
             {
                 // Read all rows into memory for sorting
-                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values)>();
+                // Each row stores values AND formulas so formulas survive the sort
+                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values, string[] formulas)>();
                 
                 for (int row = startRow; row <= endRow; row++)
                 {
@@ -1041,20 +1064,23 @@ namespace AuserExcelTransformer.Services
                         }
                     }
                     
-                    // Read all cell values for this row
+                    // Read all cell values AND formulas for this row
                     var values = new object[dimension.End.Column];
+                    var formulas = new string[dimension.End.Column];
                     for (int col = 1; col <= dimension.End.Column; col++)
                     {
-                        values[col - 1] = worksheet.Cells[row, col].Value;
+                        var cell = worksheet.Cells[row, col];
+                        formulas[col - 1] = cell.Formula ?? string.Empty;
+                        values[col - 1] = cell.Value;
                     }
                     
-                    rows.Add((row, date, time, values));
+                    rows.Add((row, date, time, values, formulas));
                 }
                 
                 // Sort by date (primary) then time (secondary)
                 var sortedRows = rows.OrderBy(r => r.date).ThenBy(r => r.time).ToList();
                 
-                // Write sorted rows back
+                // Write sorted rows back — restore formulas where present, values otherwise
                 for (int i = 0; i < sortedRows.Count; i++)
                 {
                     int targetRow = startRow + i;
@@ -1063,12 +1089,27 @@ namespace AuserExcelTransformer.Services
                     for (int col = 1; col <= dimension.End.Column; col++)
                     {
                         var cell = worksheet.Cells[targetRow, col];
-                        cell.Value = sortedRow.values[col - 1];
-                        
-                        // Apply time format immediately after setting value for columns 2 and 9
-                        if ((col == 2 || col == 9) && sortedRow.values[col - 1] is double)
+                        var formula = sortedRow.formulas[col - 1];
+
+                        if (!string.IsNullOrEmpty(formula))
                         {
-                            cell.Style.Numberformat.Format = "h:mm";
+                            // Rewrite formula — update row references to the new target row
+                            // Replace row numbers in cell references (e.g. C3 → C{targetRow})
+                            var updatedFormula = System.Text.RegularExpressions.Regex.Replace(
+                                formula,
+                                @"(?<=[A-Z])\d+",
+                                targetRow.ToString());
+                            cell.Formula = updatedFormula;
+                        }
+                        else
+                        {
+                            cell.Value = sortedRow.values[col - 1];
+                            
+                            // Apply time format immediately after setting value for columns 2 and 9
+                            if ((col == 2 || col == 9) && sortedRow.values[col - 1] is double)
+                            {
+                                cell.Style.Numberformat.Format = "h:mm";
+                            }
                         }
                     }
                     

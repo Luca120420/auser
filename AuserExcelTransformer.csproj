@@ -35,6 +35,7 @@
     <Compile Remove="InspectSheets\**" />
     <Compile Remove="VerifyTimeFix\**" />
     <Compile Remove="DiagnoseTransformation\**" />
+    <Compile Remove="InspectProp\**" />
     <Compile Remove="InspectRealFile.cs" />
     <Compile Remove="InspectRealFileSimple.cs" />
     <Compile Remove="InspectPartenza.cs" />
@@ -84,6 +85,8 @@
     <Compile Include="Tests\VolunteerDeletionPersistenceBugTests.cs" />
     <Compile Include="Tests\VolunteerDeletionPreservationTests.cs" />
     <Compile Include="Tests\GUIInspectionModeBugExplorationTests.cs" />
+    <Compile Include="Tests\VlookupIndirizzoNoteTests.cs" />
+    <Compile Include="Tests\VlookupIndirizzoNotePropertyTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
