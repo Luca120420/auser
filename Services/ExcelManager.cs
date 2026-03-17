@@ -712,15 +712,15 @@ namespace AuserExcelTransformer.Services
                         targetCell.Value = nextWeekDate;
                         targetCell.Style.Numberformat.Format = "ddd dd mmm";
                     }
-                    // Col 4 (Indirizzo) - write INDEX/MATCH formula instead of static value
+                    // Col 4 (Indirizzo) - copy static value from laboratori sheet (no VLOOKUP)
                     else if (laboratoriCol == 4)
                     {
-                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,2,FALSE)";
+                        targetCell.Value = sourceCell.Value;
                     }
-                    // Col 6 (Note) - write VLOOKUP formula instead of static value
+                    // Col 6 (Note) - copy static value from laboratori sheet (no VLOOKUP)
                     else if (laboratoriCol == 6)
                     {
-                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,3,FALSE)";
+                        targetCell.Value = sourceCell.Value;
                     }
                     // Special handling for time columns (2 = Partenza, 9 = Arrivo)
                     else if (laboratoriCol == 2 || laboratoriCol == 9)
@@ -769,15 +769,8 @@ namespace AuserExcelTransformer.Services
                         targetCell.Value = sourceCell.Value;
                     }
                     
-                    // Apply italic formatting to Assistito (col 3) and Indirizzo (col 4) from laboratori
-                    if (targetCol == 3 || targetCol == 4)
-                    {
-                        targetCell.Style.Font.Italic = true;
-                    }
-
                     // Copy formatting (but NEVER copy background color to avoid yellow highlighting)
-                    // Skip formatting copy for formula cells (col 4 and 6)
-                    if (sourceCell.Style != null && laboratoriCol != 4 && laboratoriCol != 6)
+                    if (sourceCell.Style != null)
                     {
                         // Copy font properties
                         targetCell.Style.Font.Bold = sourceCell.Style.Font.Bold;
@@ -812,6 +805,15 @@ namespace AuserExcelTransformer.Services
                         {
                             targetCell.Style.Numberformat.Format = "h:mm";
                         }
+                    }
+
+                    // Laboratori rows: Assistito (col 3) and Indirizzo (col 4) must be Italic + Tahoma + size 9
+                    // Applied after formatting copy so it is never overwritten
+                    if (targetCol == 3 || targetCol == 4)
+                    {
+                        targetCell.Style.Font.Italic = true;
+                        targetCell.Style.Font.Name = "Tahoma";
+                        targetCell.Style.Font.Size = 9;
                     }
                 }
                 targetRow++;
@@ -1015,8 +1017,8 @@ namespace AuserExcelTransformer.Services
             try
             {
                 // Read all rows into memory for sorting
-                // Each row stores values AND formulas so formulas survive the sort
-                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values, string[] formulas)>();
+                // Each row stores values, formulas, and per-cell font styles so they survive the sort
+                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values, string[] formulas, bool[] italic, string[] fontName, float[] fontSize)>();
                 
                 for (int row = startRow; row <= endRow; row++)
                 {
@@ -1064,17 +1066,23 @@ namespace AuserExcelTransformer.Services
                         }
                     }
                     
-                    // Read all cell values AND formulas for this row
+                    // Read all cell values, formulas, and font styles for this row
                     var values = new object[dimension.End.Column];
                     var formulas = new string[dimension.End.Column];
+                    var italic = new bool[dimension.End.Column];
+                    var fontName = new string[dimension.End.Column];
+                    var fontSize = new float[dimension.End.Column];
                     for (int col = 1; col <= dimension.End.Column; col++)
                     {
                         var cell = worksheet.Cells[row, col];
                         formulas[col - 1] = cell.Formula ?? string.Empty;
                         values[col - 1] = cell.Value;
+                        italic[col - 1] = cell.Style.Font.Italic;
+                        fontName[col - 1] = cell.Style.Font.Name;
+                        fontSize[col - 1] = cell.Style.Font.Size;
                     }
                     
-                    rows.Add((row, date, time, values, formulas));
+                    rows.Add((row, date, time, values, formulas, italic, fontName, fontSize));
                 }
                 
                 // Sort by date (primary) then time (secondary)
@@ -1110,6 +1118,17 @@ namespace AuserExcelTransformer.Services
                             {
                                 cell.Style.Numberformat.Format = "h:mm";
                             }
+                        }
+
+                        // Restore font italic, name, and size (e.g. laboratori rows use Italic + Tahoma + size 9)
+                        cell.Style.Font.Italic = sortedRow.italic[col - 1];
+                        if (!string.IsNullOrEmpty(sortedRow.fontName[col - 1]))
+                        {
+                            cell.Style.Font.Name = sortedRow.fontName[col - 1];
+                        }
+                        if (sortedRow.fontSize[col - 1] > 0)
+                        {
+                            cell.Style.Font.Size = sortedRow.fontSize[col - 1];
                         }
                     }
                     
