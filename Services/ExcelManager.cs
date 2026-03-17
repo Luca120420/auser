@@ -1217,7 +1217,6 @@ namespace AuserExcelTransformer.Services
             catch (Exception ex)
             {
                 // Log error and continue without sorting (preserve original order)
-                Console.WriteLine($"Errore durante l'ordinamento dei dati: {ex.Message}");
             }
         }
 

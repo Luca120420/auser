@@ -17,12 +17,28 @@
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.0.5" />
     <PackageReference Include="CsvHelper" Version="30.0.1" />
-    <PackageReference Include="FsCheck" Version="2.16.6" />
-    <PackageReference Include="Moq" Version="4.20.70" />
-    <PackageReference Include="NUnit" Version="4.0.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.4" />
+    <!-- Test packages: compile-only, no runtime assets published -->
+    <PackageReference Include="FsCheck" Version="2.16.6">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime;build;native;contentfiles;analyzers</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Moq" Version="4.20.70">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime;build;native;contentfiles;analyzers</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="NUnit" Version="4.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime;build;native;contentfiles;analyzers</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime;build;native;contentfiles;analyzers</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime;build;native;contentfiles;analyzers</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -114,5 +130,12 @@
       <LastGenOutput>Resources.it.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <!-- Patch the PE subsystem to GUI (2) after publish to suppress the console window -->
+  <Target Name="PatchSubsystem" AfterTargets="Publish">
+    <Exec Command="powershell -NoProfile -WindowStyle Hidden -Command &quot;$f='$(PublishDir)AuserGestioneTrasporti.exe'; $b=[System.IO.File]::ReadAllBytes($f); $peOffset=[System.BitConverter]::ToInt32($b,0x3C); $subsystemOffset=$peOffset+0x5C; $b[$subsystemOffset]=2; $b[$subsystemOffset+1]=0; [System.IO.File]::WriteAllBytes($f,$b); Write-Host 'Subsystem patched to GUI'&quot;" />
+    <!-- Remove test infrastructure files that must not ship with the app -->
+    <Exec Command="powershell -NoProfile -WindowStyle Hidden -Command &quot;$d='$(PublishDir)'; @('testhost.exe','testhost.dll','testhost.x86.exe','testhost.x86.dll','Microsoft.TestPlatform.CommunicationUtilities.dll','Microsoft.TestPlatform.CoreUtilities.dll','Microsoft.TestPlatform.CrossPlatEngine.dll','Microsoft.TestPlatform.ObjectModel.dll','Microsoft.TestPlatform.PlatformAbstractions.dll','Microsoft.TestPlatform.Utilities.dll','Microsoft.VisualStudio.TestPlatform.Common.dll','nunit.engine.dll','nunit.engine.api.dll','nunit3.testadapter.dll','NUnit3.TestAdapter.dll','FsCheck.dll','FSharp.Core.dll','Moq.dll','Castle.Core.dll','nunit.framework.dll') | ForEach-Object { $f=Join-Path $d $_; if(Test-Path $f){Remove-Item $f -Force; Write-Host &quot;Removed: $_&quot;} }&quot;" />
+  </Target>
 
 </Project>

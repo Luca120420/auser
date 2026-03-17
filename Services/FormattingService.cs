@@ -70,8 +70,7 @@ namespace AuserExcelTransformer.Services
             }
             catch (Exception ex)
             {
-                // Log error but continue (non-critical formatting failure)
-                Console.WriteLine($"Warning: Failed to apply bold formatting to headers: {ex.Message}");
+                // Non-critical formatting failure - continue silently
             }
         }
 
@@ -150,8 +149,7 @@ namespace AuserExcelTransformer.Services
             }
             catch (Exception ex)
             {
-                // Log error but continue (non-critical formatting failure)
-                Console.WriteLine($"Warning: Failed to apply date group borders: {ex.Message}");
+                // Non-critical formatting failure - continue silently
             }
         }
     }

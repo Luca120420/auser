@@ -107,22 +107,22 @@ public class ConfigurationService : IConfigurationService
             // Copy the config file from AppData to data folder
             File.Copy(appDataConfigPath, dataConfigPath, overwrite: false);
             
-            Console.WriteLine($"Successfully migrated configuration from AppData to data folder.");
+
         }
         catch (IOException ex)
         {
             // Handle corrupted or inaccessible files gracefully
-            Console.WriteLine($"Warning: Could not migrate configuration from AppData. Error: {ex.Message}");
+
         }
         catch (UnauthorizedAccessException ex)
         {
             // Handle permission issues
-            Console.WriteLine($"Warning: Could not migrate configuration from AppData due to insufficient permissions. Error: {ex.Message}");
+
         }
         catch (Exception ex)
         {
             // Handle any other unexpected errors
-            Console.WriteLine($"Warning: Could not migrate configuration from AppData. Error: {ex.Message}");
+
         }
     }
 
@@ -171,7 +171,7 @@ public class ConfigurationService : IConfigurationService
             // Check if external volunteer file exists
             if (!File.Exists(volunteerFilePath))
             {
-                Console.WriteLine($"Warning: Volunteer file not found at '{volunteerFilePath}'. Skipping volunteer migration.");
+
                 // Remove the property since the file doesn't exist
                 RemoveVolunteerFilePathFromConfig(json);
                 return;
@@ -185,7 +185,7 @@ public class ConfigurationService : IConfigurationService
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Warning: Could not load volunteer data from '{volunteerFilePath}'. Error: {ex.Message}");
+
                 // Remove the property since we can't load the data
                 RemoveVolunteerFilePathFromConfig(json);
                 return;
@@ -199,11 +199,11 @@ public class ConfigurationService : IConfigurationService
             try
             {
                 _volunteerManager.SaveVolunteers(volunteersPath, volunteers);
-                Console.WriteLine($"Successfully migrated volunteer data to internal storage.");
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Warning: Could not save volunteer data to internal storage. Error: {ex.Message}");
+
                 return; // Don't remove the property if we couldn't save
             }
 
@@ -212,7 +212,7 @@ public class ConfigurationService : IConfigurationService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Warning: Could not migrate volunteer data. Error: {ex.Message}");
+
         }
     }
 
@@ -254,11 +254,11 @@ public class ConfigurationService : IConfigurationService
             string cleanedJson = Encoding.UTF8.GetString(stream.ToArray());
             File.WriteAllText(configPath, cleanedJson);
             
-            Console.WriteLine("Removed VolunteerFilePath property from configuration.");
+
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Warning: Could not remove VolunteerFilePath from configuration. Error: {ex.Message}");
+
         }
     }
 
@@ -326,7 +326,7 @@ public class ConfigurationService : IConfigurationService
         catch (Exception ex) when (ex is System.Text.Json.JsonException || ex is IOException)
         {
             // Handle corrupted file - log warning and return empty config
-            Console.WriteLine($"Warning: Configuration file is corrupted or unreadable. Using empty configuration. Error: {ex.Message}");
+
             return new AppConfiguration();
         }
     }
