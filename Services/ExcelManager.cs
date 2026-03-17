@@ -587,6 +587,15 @@ namespace AuserExcelTransformer.Services
                         }
                     }
                 }
+                // Apply thin borders to all columns in the row (including empty cells)
+                for (int c = 1; c <= 12; c++)
+                {
+                    var borderCell = targetWorksheet.Cells[targetRow, c];
+                    borderCell.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                }
                 // Apply wrap text to Assistito (col 3) for all fissi rows
                 targetWorksheet.Cells[targetRow, 3].Style.WrapText = true;
                 targetRow++;
@@ -818,6 +827,15 @@ namespace AuserExcelTransformer.Services
                         targetCell.Style.Font.Size = 9;
                     }
                 }
+                // Apply thin borders to all columns in the row (including empty cells)
+                for (int c = 1; c <= 12; c++)
+                {
+                    var borderCell = targetWorksheet.Cells[targetRow, c];
+                    borderCell.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                }
                 // Apply wrap text to Assistito (col 3) for all laboratori rows
                 targetWorksheet.Cells[targetRow, 3].Style.WrapText = true;
                 targetRow++;
@@ -987,6 +1005,16 @@ namespace AuserExcelTransformer.Services
                 // Column 12: Note Gasnet (from CSV)
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.NoteGasnet;
 
+                // Apply thin borders to all columns in the row (including empty cells)
+                for (int c = 1; c <= 12; c++)
+                {
+                    var borderCell = sheet.Worksheet.Cells[currentRow, c];
+                    borderCell.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    borderCell.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                }
+
                 // Apply yellow highlight if flagged
                 if (row.IsYellow)
                 {
@@ -1035,7 +1063,7 @@ namespace AuserExcelTransformer.Services
             {
                 // Read all rows into memory for sorting
                 // Each row stores values, formulas, and per-cell font styles so they survive the sort
-                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values, string[] formulas, bool[] italic, string[] fontName, float[] fontSize, bool[] wrapText, string[] fillColor)>();
+                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values, string[] formulas, bool[] italic, string[] fontName, float[] fontSize, bool[] wrapText, string[] fillColor, OfficeOpenXml.Style.ExcelBorderStyle[] borderStyle)>();
                 
                 for (int row = startRow; row <= endRow; row++)
                 {
@@ -1091,6 +1119,7 @@ namespace AuserExcelTransformer.Services
                     var fontSize = new float[dimension.End.Column];
                     var wrapText = new bool[dimension.End.Column];
                     var fillColor = new string[dimension.End.Column];
+                    var borderStyle = new OfficeOpenXml.Style.ExcelBorderStyle[dimension.End.Column];
                     for (int col = 1; col <= dimension.End.Column; col++)
                     {
                         var cell = worksheet.Cells[row, col];
@@ -1100,14 +1129,14 @@ namespace AuserExcelTransformer.Services
                         fontName[col - 1] = cell.Style.Font.Name;
                         fontSize[col - 1] = cell.Style.Font.Size;
                         wrapText[col - 1] = cell.Style.WrapText;
-                        // Only capture yellow fill (set by WriteDataRowsEnhanced for Accompag. rows)
-                        // Ignore any other fills from source sheets
+                        // Only capture yellow fill
                         bool cellIsYellow = cell.Style.Fill.PatternType == OfficeOpenXml.Style.ExcelFillStyle.Solid
                             && cell.Style.Fill.BackgroundColor.Rgb == "FFFFFF00";
                         fillColor[col - 1] = cellIsYellow ? "FFFFFF00" : null;
+                        borderStyle[col - 1] = cell.Style.Border.Top.Style;
                     }
                     
-                    rows.Add((row, date, time, values, formulas, italic, fontName, fontSize, wrapText, fillColor));
+                    rows.Add((row, date, time, values, formulas, italic, fontName, fontSize, wrapText, fillColor, borderStyle));
                 }
                 
                 // Sort by date (primary) then time (secondary)
@@ -1169,6 +1198,13 @@ namespace AuserExcelTransformer.Services
                             cell.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                             cell.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
                         }
+
+                        // Restore borders
+                        var bs = sortedRow.borderStyle[col - 1];
+                        cell.Style.Border.Top.Style = bs;
+                        cell.Style.Border.Bottom.Style = bs;
+                        cell.Style.Border.Left.Style = bs;
+                        cell.Style.Border.Right.Style = bs;
                     }
                     
                     // Reapply date formatting to column 1
