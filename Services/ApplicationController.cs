@@ -341,8 +341,8 @@ namespace AuserExcelTransformer.Services
                     _excelManager.ApplyThickBordersToDateGroups(newSheet, 3, lastDataRow);
                 }
 
-                // Step 11: Apply yellow highlighting to rows with "Accompag. con macchina attrezzata"
-                _excelManager.ApplyYellowHighlight(newSheet, enhancedTransformationResult.YellowHighlightRows);
+                // Step 11: Yellow highlighting is now applied per-row in WriteDataRowsEnhanced
+                // and preserved through SortDataRows, so no post-sort call needed here.
 
                 // Step 12: Enable AutoFilter for sorting and filtering
                 _excelManager.EnableAutoFilter(newSheet);

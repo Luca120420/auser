@@ -587,6 +587,8 @@ namespace AuserExcelTransformer.Services
                         }
                     }
                 }
+                // Apply wrap text to Assistito (col 3) for all fissi rows
+                targetWorksheet.Cells[targetRow, 3].Style.WrapText = true;
                 targetRow++;
             }
         }
@@ -816,6 +818,8 @@ namespace AuserExcelTransformer.Services
                         targetCell.Style.Font.Size = 9;
                     }
                 }
+                // Apply wrap text to Assistito (col 3) for all laboratori rows
+                targetWorksheet.Cells[targetRow, 3].Style.WrapText = true;
                 targetRow++;
             }
         }
@@ -954,9 +958,9 @@ namespace AuserExcelTransformer.Services
                 partenzaCell.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
                 
                 // Column 3: Assistito
-                sheet.Worksheet.Cells[currentRow, col++].Value = row.Assistito;
-                
-                // Column 4: Indirizzo - VLOOKUP formula
+                var assistitoCell = sheet.Worksheet.Cells[currentRow, col++];
+                assistitoCell.Value = row.Assistito;
+                assistitoCell.Style.WrapText = true;
                 sheet.Worksheet.Cells[currentRow, col++].Formula = $"VLOOKUP(C{currentRow},assistiti!A:C,2,FALSE)";
                 
                 // Column 5: Destinazione
@@ -982,6 +986,19 @@ namespace AuserExcelTransformer.Services
                 
                 // Column 12: Note Gasnet (from CSV)
                 sheet.Worksheet.Cells[currentRow, col++].Value = row.NoteGasnet;
+
+                // Apply yellow highlight if flagged
+                if (row.IsYellow)
+                {
+                    var dimension = sheet.Worksheet.Dimension;
+                    int maxCol = dimension?.End.Column ?? 12;
+                    for (int c = 1; c <= maxCol; c++)
+                    {
+                        var cell = sheet.Worksheet.Cells[currentRow, c];
+                        cell.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        cell.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    }
+                }
 
                 currentRow++;
             }
@@ -1018,7 +1035,7 @@ namespace AuserExcelTransformer.Services
             {
                 // Read all rows into memory for sorting
                 // Each row stores values, formulas, and per-cell font styles so they survive the sort
-                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values, string[] formulas, bool[] italic, string[] fontName, float[] fontSize)>();
+                var rows = new List<(int rowNum, DateTime date, TimeSpan time, object[] values, string[] formulas, bool[] italic, string[] fontName, float[] fontSize, bool[] wrapText, string[] fillColor)>();
                 
                 for (int row = startRow; row <= endRow; row++)
                 {
@@ -1072,6 +1089,8 @@ namespace AuserExcelTransformer.Services
                     var italic = new bool[dimension.End.Column];
                     var fontName = new string[dimension.End.Column];
                     var fontSize = new float[dimension.End.Column];
+                    var wrapText = new bool[dimension.End.Column];
+                    var fillColor = new string[dimension.End.Column];
                     for (int col = 1; col <= dimension.End.Column; col++)
                     {
                         var cell = worksheet.Cells[row, col];
@@ -1080,9 +1099,15 @@ namespace AuserExcelTransformer.Services
                         italic[col - 1] = cell.Style.Font.Italic;
                         fontName[col - 1] = cell.Style.Font.Name;
                         fontSize[col - 1] = cell.Style.Font.Size;
+                        wrapText[col - 1] = cell.Style.WrapText;
+                        // Only capture yellow fill (set by WriteDataRowsEnhanced for Accompag. rows)
+                        // Ignore any other fills from source sheets
+                        bool cellIsYellow = cell.Style.Fill.PatternType == OfficeOpenXml.Style.ExcelFillStyle.Solid
+                            && cell.Style.Fill.BackgroundColor.Rgb == "FFFFFF00";
+                        fillColor[col - 1] = cellIsYellow ? "FFFFFF00" : null;
                     }
                     
-                    rows.Add((row, date, time, values, formulas, italic, fontName, fontSize));
+                    rows.Add((row, date, time, values, formulas, italic, fontName, fontSize, wrapText, fillColor));
                 }
                 
                 // Sort by date (primary) then time (secondary)
@@ -1120,7 +1145,7 @@ namespace AuserExcelTransformer.Services
                             }
                         }
 
-                        // Restore font italic, name, and size (e.g. laboratori rows use Italic + Tahoma + size 9)
+                        // Restore font italic, name, size, and wrap text
                         cell.Style.Font.Italic = sortedRow.italic[col - 1];
                         if (!string.IsNullOrEmpty(sortedRow.fontName[col - 1]))
                         {
@@ -1129,6 +1154,20 @@ namespace AuserExcelTransformer.Services
                         if (sortedRow.fontSize[col - 1] > 0)
                         {
                             cell.Style.Font.Size = sortedRow.fontSize[col - 1];
+                        }
+                        cell.Style.WrapText = sortedRow.wrapText[col - 1];
+
+                        // Restore fill color — always explicitly set to avoid EPPlus shared style bleed
+                        if (sortedRow.fillColor[col - 1] == "FFFFFF00")
+                        {
+                            cell.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            cell.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                        }
+                        else
+                        {
+                            // Explicitly set no fill — use Solid white to force a distinct style object
+                            cell.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            cell.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.White);
                         }
                     }
                     

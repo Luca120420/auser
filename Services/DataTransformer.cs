@@ -84,9 +84,12 @@ namespace AuserExcelTransformer.Services
                 // Transform the appointment to an enhanced row with lookups
                 var enhancedRow = TransformAppointmentEnhanced(appointment, lookupService);
 
+                // Set yellow flag directly on the row so it survives sorting
+                enhancedRow.IsYellow = shouldHighlight;
+
                 result.Rows.Add(enhancedRow);
 
-                // Track rows that need yellow highlighting
+                // Track rows that need yellow highlighting (kept for backward compatibility)
                 if (shouldHighlight)
                 {
                     result.YellowHighlightRows.Add(rowIndex);

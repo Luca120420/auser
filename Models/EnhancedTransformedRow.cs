@@ -71,5 +71,10 @@ namespace AuserExcelTransformer.Models
         /// NOTE GASNET - Notes from CSV (positioned after Indirizzo Gasnet)
         /// </summary>
         public string NoteGasnet { get; set; } = string.Empty;
+
+        /// <summary>
+        /// IsYellow - True if this row should be highlighted in yellow (Accompag. con macchina attrezzata)
+        /// </summary>
+        public bool IsYellow { get; set; } = false;
     }
 }
