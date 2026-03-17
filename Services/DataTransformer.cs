@@ -190,8 +190,8 @@ namespace AuserExcelTransformer.Services
                 // Column 8: Volontario - Empty for CSV
                 Volontario = string.Empty,
 
-                // Column 9: Arrivo - Empty for CSV
-                Arrivo = string.Empty,
+                // Column 9: Arrivo - ORA INIZIO SERVIZIO from CSV
+                Arrivo = appointment.OraInizioServizio,
 
                 // Column 10: Avv (from fissi lookup)
                 Avv = avv,
