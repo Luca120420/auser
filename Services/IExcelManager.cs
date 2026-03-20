@@ -104,6 +104,16 @@ namespace AuserExcelTransformer.Services
         void EnableAutoFilter(Sheet sheet);
 
         /// <summary>
+        /// Applies fixed column widths to the 12-column output sheet.
+        /// </summary>
+        void ApplyColumnWidths(Sheet sheet);
+
+        /// <summary>
+        /// Dynamically adjusts row heights so wrapped text is fully visible.
+        /// </summary>
+        void AutoFitRowHeights(Sheet sheet, int startRow);
+
+        /// <summary>
         /// Saves the workbook to the specified file path.
         /// </summary>
         /// <param name="workbook">The Excel workbook to save</param>

@@ -306,6 +306,7 @@ namespace AuserExcelTransformer.Services
                 // Step 8: Write header row and column headers (enhanced)
                 _excelManager.WriteHeaderRow(newSheet, nextMondayDate);
                 _excelManager.WriteColumnHeadersEnhanced(newSheet);
+                _excelManager.ApplyColumnWidths(newSheet);
                 
                 // Step 8.5: Apply bold formatting to headers
                 _excelManager.ApplyBoldToHeaders(newSheet, 2);
@@ -345,6 +346,7 @@ namespace AuserExcelTransformer.Services
                 // and preserved through SortDataRows, so no post-sort call needed here.
 
                 // Step 12: Enable AutoFilter for sorting and filtering
+                _excelManager.AutoFitRowHeights(newSheet, 3);
                 _excelManager.EnableAutoFilter(newSheet);
 
                 // Mark as processed and enable download button

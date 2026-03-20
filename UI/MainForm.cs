@@ -52,8 +52,9 @@ namespace AuserExcelTransformer.UI
         private void InitializeCustomComponents()
         {
             // Task 4.5: form properties
-            this.Text = "Auser Gestione Trasporti";
+            this.Text = "Auser Gestione Trasporti v2.0.2";
             this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.WindowState = FormWindowState.Maximized;
             this.MinimumSize = new Size(700, 600);
             this.MaximizeBox = true;
             this.StartPosition = FormStartPosition.CenterScreen;

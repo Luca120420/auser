@@ -468,6 +468,8 @@ namespace AuserExcelTransformer.Tests
             public void AppendLaboratoriData(Sheet targetSheet, Sheet laboratoriSheet, int startRow, DateTime targetWeekMonday) { }
             public void ApplyYellowHighlight(Sheet sheet, List<int> rowNumbers) { }
             public void EnableAutoFilter(Sheet sheet) { }
+            public void ApplyColumnWidths(Sheet sheet) { }
+            public void AutoFitRowHeights(Sheet sheet, int startRow) { }
             public void SaveWorkbook(ExcelWorkbook workbook, string filePath) { }
             public string ReadHeader(Sheet sheet) => "";
             public void WriteColumnHeadersEnhanced(Sheet sheet) { }

@@ -491,15 +491,15 @@ namespace AuserExcelTransformer.Services
                         targetCell.Value = nextWeekDate;
                         targetCell.Style.Numberformat.Format = "ddd dd mmm";
                     }
-                    // Col 4 (Indirizzo) - write VLOOKUP formula instead of static value
+                    // Col 4 (Indirizzo) - copy value as-is from fissi (no VLOOKUP)
                     else if (fissiCol == 4)
                     {
-                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,2,FALSE)";
+                        targetCell.Value = sourceCell.Value;
                     }
-                    // Col 6 (Note) - write VLOOKUP formula instead of static value
+                    // Col 6 (Note) - copy value as-is from fissi (no VLOOKUP)
                     else if (fissiCol == 6)
                     {
-                        targetCell.Formula = $"VLOOKUP(C{targetRow},assistiti!A:C,3,FALSE)";
+                        targetCell.Value = sourceCell.Value;
                     }
                     // Special handling for time columns (2 = Partenza, 9 = Arrivo)
                     else if (fissiCol == 2 || fissiCol == 9)
@@ -549,8 +549,7 @@ namespace AuserExcelTransformer.Services
                     }
 
                     // Copy formatting (but NEVER copy background color to avoid yellow highlighting)
-                    // Skip formatting for formula cells (col 4 and 6)
-                    if (sourceCell.Style != null && fissiCol != 4 && fissiCol != 6)
+                    if (sourceCell.Style != null)
                     {
                         // Copy font properties
                         targetCell.Style.Font.Bold = sourceCell.Style.Font.Bold;
@@ -884,6 +883,88 @@ namespace AuserExcelTransformer.Services
         /// This allows users to filter and sort data by any column.
         /// </summary>
         /// <param name="sheet">The target sheet</param>
+        /// <summary>
+        /// Dynamically adjusts row heights based on cell content so no text is hidden.
+        /// Uses wrap-text columns (Assistito=3, Indirizzo=4, Destinazione=5, Note=6,
+        /// Indirizzo Gasnet=11, Note Gasnet=12) to estimate required lines.
+        /// </summary>
+        public void AutoFitRowHeights(Sheet sheet, int startRow)
+        {
+            if (sheet == null || sheet.Worksheet == null)
+                throw new ArgumentNullException(nameof(sheet));
+
+            var ws = sheet.Worksheet;
+            var dim = ws.Dimension;
+            if (dim == null) return;
+
+            // Column widths (in chars) for wrap-text columns — must match ApplyColumnWidths
+            var wrapColumns = new Dictionary<int, double>
+            {
+                { 3,  20 }, // Assistito
+                { 4,  40 }, // Indirizzo
+                { 5,  40 }, // Destinazione
+                { 6,  40 }, // Note
+                { 11, 40 }, // Indirizzo Gasnet
+                { 12, 40 }, // Note Gasnet
+            };
+
+            const double lineHeightPts = 15.0; // ~15pt per line at default font size
+            const double minHeightPts  = 15.0;
+            // Average chars per unit of column width (empirical for Calibri 11)
+            const double charsPerWidthUnit = 1.2;
+
+            int lastRow = dim.End.Row;
+            for (int row = startRow; row <= lastRow; row++)
+            {
+                int maxLines = 1;
+                foreach (var kvp in wrapColumns)
+                {
+                    int col = kvp.Key;
+                    double colWidthChars = kvp.Value * charsPerWidthUnit;
+                    var cell = ws.Cells[row, col];
+                    string text = cell.Text ?? string.Empty;
+                    if (string.IsNullOrEmpty(text)) continue;
+
+                    // Count explicit newlines + estimate wrapping
+                    string[] explicitLines = text.Split('\n');
+                    int lines = 0;
+                    foreach (var line in explicitLines)
+                        lines += Math.Max(1, (int)Math.Ceiling(line.Length / colWidthChars));
+
+                    if (lines > maxLines) maxLines = lines;
+                }
+
+                double newHeight = Math.Max(minHeightPts, maxLines * lineHeightPts);
+                ws.Row(row).Height = newHeight;
+                ws.Row(row).CustomHeight = true;
+
+                // Enforce left alignment on every cell in the row (overrides any copied alignment)
+                int lastCol = ws.Dimension?.End.Column ?? 12;
+                for (int col = 1; col <= lastCol; col++)
+                    ws.Cells[row, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+            }
+        }
+
+        /// <summary>
+        /// Applies fixed column widths to the 12-column output sheet.
+        /// </summary>
+        public void ApplyColumnWidths(Sheet sheet)
+        {
+            if (sheet == null || sheet.Worksheet == null)
+                throw new ArgumentNullException(nameof(sheet));
+
+            var ws = sheet.Worksheet;
+            // Col 1: Data, Col 2: Partenza, Col 3: Assistito, Col 4: Indirizzo,
+            // Col 5: Destinazione, Col 6: Note, Col 7: Auto, Col 8: Volontario,
+            // Col 9: Arrivo, Col 10: Avv, Col 11: Indirizzo Gasnet, Col 12: Note Gasnet
+            double[] widths = { 10, 10, 20, 40, 40, 40, 10, 10, 10, 6, 40, 40 };
+            for (int i = 0; i < widths.Length; i++)
+            {
+                ws.Column(i + 1).Width = widths[i];
+                ws.Column(i + 1).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+            }
+        }
+
         public void EnableAutoFilter(Sheet sheet)
         {
             if (sheet == null || sheet.Worksheet == null)
