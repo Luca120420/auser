@@ -274,19 +274,7 @@ public class ConfigurationService : IConfigurationService
 
         string configPath = GetConfigFilePath();
 
-        // If config doesn't exist in data folder, attempt migration from AppData
-        if (!File.Exists(configPath))
-        {
-            MigrateFromAppData();
-        }
-
-        // Load configuration
-        var config = LoadConfigurationInternal();
-        
-        // Migrate volunteer data after config migration
-        MigrateVolunteerData(config);
-
-        // Reload configuration after volunteer migration (in case it was cleaned)
+        // Load configuration (no migration from AppData for v2.0.2+)
         return LoadConfigurationInternal();
     }
 

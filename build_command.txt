@@ -1,1 +1,1 @@
-dotnet publish AuserExcelTransformer.csproj -c Release -r win-x64 --self-contained true -o build_output
+dotnet publish AuserExcelTransformer.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:DebugSymbols=false -o auser_gestione_trasporti

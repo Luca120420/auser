@@ -120,4 +120,6 @@ publish_portable/
 package_temp/
 TODO.txt
 build_output/
+auser_gestione_trasporti/
+bin/
 volontari-auser.json
