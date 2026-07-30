@@ -33,15 +33,12 @@
     </PackageReference>
     <PackageReference Include="NUnit" Version="4.0.1">
       <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>runtime;native</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0">
       <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>runtime;native</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0">
       <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>runtime;native</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
@@ -110,6 +107,7 @@
     <Compile Include="Tests\VlookupIndirizzoNotePropertyTests.cs" />
     <Compile Include="Tests\ModernUIDesignTests.cs" />
     <Compile Include="Tests\ModernUIDesignPropertyTests.cs" />
+    <Compile Include="Tests\AvvColumnPropertyTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

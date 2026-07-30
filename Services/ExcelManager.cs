@@ -439,7 +439,7 @@ namespace AuserExcelTransformer.Services
             // Fissi Col 9 (Arrivo) → Target Col 9 (Arrivo)
             // Target Cols 10-14 remain empty for other data sources
             
-            int[] columnMapping = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            int[] columnMapping = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
             // Copy data rows only (skip header rows)
             int targetRow = startRow;
@@ -453,7 +453,7 @@ namespace AuserExcelTransformer.Services
                 }
 
                 // Copy mapped columns from fissi sheet
-                for (int fissiCol = 1; fissiCol <= Math.Min(9, fissiDimension.End.Column); fissiCol++)
+                for (int fissiCol = 1; fissiCol <= Math.Min(10, fissiDimension.End.Column); fissiCol++)
                 {
                     int targetCol = columnMapping[fissiCol - 1];
                     
@@ -595,8 +595,12 @@ namespace AuserExcelTransformer.Services
                     borderCell.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                     borderCell.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                 }
-                // Apply wrap text to Assistito (col 3) for all fissi rows
-                targetWorksheet.Cells[targetRow, 3].Style.WrapText = true;
+                // Apply wrap text to text-content columns (Assistito, Indirizzo, Destinazione, Note, Avvisi)
+                int[] wrapColumns = { 3, 4, 5, 6, 10 };
+                foreach (int wrapCol in wrapColumns)
+                {
+                    targetWorksheet.Cells[targetRow, wrapCol].Style.WrapText = true;
+                }
                 targetRow++;
             }
         }
@@ -835,8 +839,12 @@ namespace AuserExcelTransformer.Services
                     borderCell.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                     borderCell.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                 }
-                // Apply wrap text to Assistito (col 3) for all laboratori rows
-                targetWorksheet.Cells[targetRow, 3].Style.WrapText = true;
+                // Apply wrap text to text-content columns (Assistito, Indirizzo, Destinazione, Note, Avvisi)
+                int[] wrapColumns = { 3, 4, 5, 6, 10 };
+                foreach (int wrapCol in wrapColumns)
+                {
+                    targetWorksheet.Cells[targetRow, wrapCol].Style.WrapText = true;
+                }
                 targetRow++;
             }
         }
@@ -904,6 +912,7 @@ namespace AuserExcelTransformer.Services
                 { 4,  40 }, // Indirizzo
                 { 5,  40 }, // Destinazione
                 { 6,  40 }, // Note
+                { 10, 20 }, // Avvisi
                 { 11, 40 }, // Indirizzo Gasnet
                 { 12, 40 }, // Note Gasnet
             };
@@ -934,14 +943,17 @@ namespace AuserExcelTransformer.Services
                     if (lines > maxLines) maxLines = lines;
                 }
 
-                double newHeight = Math.Max(minHeightPts, maxLines * lineHeightPts);
+                double newHeight = Math.Max(minHeightPts, (maxLines + 1) * lineHeightPts);
                 ws.Row(row).Height = newHeight;
                 ws.Row(row).CustomHeight = true;
 
-                // Enforce left alignment on every cell in the row (overrides any copied alignment)
+                // Enforce left alignment and top vertical alignment on every cell in the row
                 int lastCol = ws.Dimension?.End.Column ?? 12;
                 for (int col = 1; col <= lastCol; col++)
+                {
                     ws.Cells[row, col].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    ws.Cells[row, col].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                }
             }
         }
 
@@ -957,7 +969,7 @@ namespace AuserExcelTransformer.Services
             // Col 1: Data, Col 2: Partenza, Col 3: Assistito, Col 4: Indirizzo,
             // Col 5: Destinazione, Col 6: Note, Col 7: Auto, Col 8: Volontario,
             // Col 9: Arrivo, Col 10: Avv, Col 11: Indirizzo Gasnet, Col 12: Note Gasnet
-            double[] widths = { 10, 10, 20, 40, 40, 40, 10, 10, 10, 6, 40, 40 };
+            double[] widths = { 10, 10, 20, 40, 40, 40, 10, 10, 10, 20, 40, 40 };
             for (int i = 0; i < widths.Length; i++)
             {
                 ws.Column(i + 1).Width = widths[i];
@@ -1094,6 +1106,13 @@ namespace AuserExcelTransformer.Services
                     borderCell.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                     borderCell.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                     borderCell.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                }
+
+                // Apply wrap text to all text-content columns
+                int[] wrapColumns = { 4, 5, 6, 10, 11, 12 };
+                foreach (int wc in wrapColumns)
+                {
+                    sheet.Worksheet.Cells[currentRow, wc].Style.WrapText = true;
                 }
 
                 // Apply yellow highlight if flagged

@@ -51,7 +51,7 @@ namespace AuserExcelTransformer.Services
                 "Auto",                 // 7
                 "Volontario",           // 8
                 "Arrivo",               // 9
-                "Avv",                  // 10 (new, from fissi lookup)
+                "Avvisi",               // 10 (new, from fissi lookup)
                 "Indirizzo Gasnet",     // 11
                 "Note Gasnet"           // 12 (from CSV)
             };
