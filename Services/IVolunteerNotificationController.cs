@@ -28,6 +28,16 @@ public interface IVolunteerNotificationController
     /// </summary>
     /// <param name="surname">Volunteer surname to delete</param>
     void OnDeleteVolunteer(string surname);
+
+    /// <summary>
+    /// Handles editing an existing volunteer contact's surname and/or email.
+    /// If the surname changes, the old entry is removed and a new one added
+    /// under the new surname (surname is the dictionary key).
+    /// </summary>
+    /// <param name="originalSurname">The volunteer's current surname (existing key)</param>
+    /// <param name="newSurname">The new surname to save</param>
+    /// <param name="newEmail">The new email address to save</param>
+    void OnEditVolunteer(string originalSurname, string newSurname, string newEmail);
     
     /// <summary>
     /// Handles deleting all volunteer contacts.

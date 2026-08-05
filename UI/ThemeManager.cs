@@ -6,16 +6,22 @@ namespace AuserExcelTransformer.UI
 {
     public static class ThemeManager
     {
-        // Palette
+        // Palette (Auser modern green palette)
         public static readonly Color ColorBackground   = Color.White;
-        public static readonly Color ColorPrimary      = Color.FromArgb(0x39, 0x39, 0x39); // #393939 Carbone
-        public static readonly Color ColorAccent       = Color.FromArgb(0x00, 0x92, 0x46); // #009246 Verde
-        public static readonly Color ColorSecondary    = Color.FromArgb(0xFA, 0xB9, 0x00); // #FAB900 Ambra
-        public static readonly Color ColorDisabled     = Color.FromArgb(0xCC, 0xCC, 0xCC);
-        public static readonly Color ColorDisabledText = Color.FromArgb(0x88, 0x88, 0x88);
-        public static readonly Color ColorBorderLight  = Color.FromArgb(0xE0, 0xE0, 0xE0);
-        public static readonly Color ColorRowAlt       = Color.FromArgb(0xF5, 0xF5, 0xF5);
-        public static readonly Color ColorError        = Color.FromArgb(0xD3, 0x2F, 0x2F); // #D32F2F
+        public static readonly Color ColorAppBackground= Color.FromArgb(0xED, 0xF6, 0xF0); // #edf6f0 Soft mint background
+        public static readonly Color ColorPrimary      = Color.FromArgb(0x06, 0x85, 0x34); // #068534 Deep green (was Carbone)
+        public static readonly Color ColorAccent       = Color.FromArgb(0x06, 0x85, 0x34); // #068534 Deep green
+        public static readonly Color ColorAccentHover  = Color.FromArgb(0x27, 0x95, 0x4F); // #27954f
+        public static readonly Color ColorSecondary    = Color.FromArgb(0x3B, 0x9F, 0x5F); // #3b9f5f Mid green
+        public static readonly Color ColorSecondaryAlt = Color.FromArgb(0x56, 0xAC, 0x75); // #56ac75
+        public static readonly Color ColorTertiary     = Color.FromArgb(0x7C, 0xBF, 0x94); // #7cbf94
+        public static readonly Color ColorSoft         = Color.FromArgb(0x9E, 0xCF, 0xB0); // #9ecfb0
+        public static readonly Color ColorDisabled     = Color.FromArgb(0xBE, 0xDF, 0xCA); // #bedfca
+        public static readonly Color ColorDisabledText = Color.FromArgb(0x7C, 0xBF, 0x94); // #7cbf94
+        public static readonly Color ColorBorderLight  = Color.FromArgb(0xBE, 0xDF, 0xCA); // #bedfca
+        public static readonly Color ColorRowAlt       = Color.FromArgb(0xED, 0xF6, 0xF0); // #edf6f0
+        public static readonly Color ColorError        = Color.FromArgb(0xD3, 0x2F, 0x2F); // #D32F2F (kept for error states)
+        public static readonly Color ColorHeaderText   = Color.White;
 
         // Font
         public static readonly Font FontTitle        = new Font("Segoe UI", 24F, FontStyle.Bold);
@@ -42,7 +48,7 @@ namespace AuserExcelTransformer.UI
         {
             if (btn == null) return;
             btn.Style = Controls.ModernButton.ButtonStyle.Secondary;
-            btn.BackColor = ColorPrimary;
+            btn.BackColor = ColorSecondaryAlt;
             btn.ForeColor = ColorBackground;
             btn.Font = FontNormal;
             btn.MinimumSize = new System.Drawing.Size(0, 40);
@@ -55,8 +61,49 @@ namespace AuserExcelTransformer.UI
         {
             if (btn == null) return;
             btn.Style = Controls.ModernButton.ButtonStyle.Accent;
-            btn.BackColor = ColorSecondary;
+            btn.BackColor = ColorSoft;
             btn.ForeColor = ColorPrimary;
+            btn.Font = FontNormal;
+            btn.MinimumSize = new System.Drawing.Size(0, 40);
+            btn.Padding = new Padding(20, 0, 20, 0);
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+        }
+
+        // Outline variant: transparent/white fill with a colored border — used for
+        // secondary actions (Importa, Cancella) per the inspiration design.
+        public static void ApplyOutlinePrimary(Controls.ModernButton btn)
+        {
+            if (btn == null) return;
+            btn.IsOutline = true;
+            btn.OutlineColor = ColorPrimary;
+            btn.OutlineHoverFill = ColorAppBackground;
+            btn.Font = FontNormal;
+            btn.MinimumSize = new System.Drawing.Size(0, 40);
+            btn.Padding = new Padding(20, 0, 20, 0);
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+        }
+
+        public static void ApplyOutlineNeutral(Controls.ModernButton btn)
+        {
+            if (btn == null) return;
+            btn.IsOutline = true;
+            btn.OutlineColor = Color.FromArgb(0x6E, 0x7A, 0x6C);
+            btn.OutlineHoverFill = ColorAppBackground;
+            btn.Font = FontNormal;
+            btn.MinimumSize = new System.Drawing.Size(0, 40);
+            btn.Padding = new Padding(20, 0, 20, 0);
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+        }
+
+        public static void ApplyOutlineError(Controls.ModernButton btn)
+        {
+            if (btn == null) return;
+            btn.IsOutline = true;
+            btn.OutlineColor = ColorError;
+            btn.OutlineHoverFill = Color.FromArgb(0xFF, 0xDA, 0xD6);
             btn.Font = FontNormal;
             btn.MinimumSize = new System.Drawing.Size(0, 40);
             btn.Padding = new Padding(20, 0, 20, 0);

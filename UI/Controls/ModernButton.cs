@@ -17,11 +17,23 @@ namespace AuserExcelTransformer.UI.Controls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ButtonStyle Style { get; set; } = ButtonStyle.Primary;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [System.ComponentModel.Browsable(false)]
+        public bool IsOutline { get; set; } = false;
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [System.ComponentModel.Browsable(false)]
+        public Color OutlineColor { get; set; } = Color.FromArgb(0x06, 0x85, 0x34);
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [System.ComponentModel.Browsable(false)]
+        public Color OutlineHoverFill { get; set; } = Color.FromArgb(0xED, 0xF6, 0xF0);
+
         private bool _isHovered;
         private bool _isPressed;
 
         // Base colors set by ThemeManager
-        private Color _baseBackColor = Color.FromArgb(0x00, 0x92, 0x46);
+        private Color _baseBackColor = Color.FromArgb(0x06, 0x85, 0x34);
         private Color _baseForeColor = Color.White;
 
         public ModernButton()
@@ -48,13 +60,38 @@ namespace AuserExcelTransformer.UI.Controls
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
+            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
+
+            if (IsOutline)
+            {
+                Color borderColor = Enabled ? OutlineColor : Color.FromArgb(0xBE, 0xDF, 0xCA);
+                Color fillColor = Enabled ? (_isPressed ? AdjustBrightness(OutlineHoverFill, -0.05f) : (_isHovered ? OutlineHoverFill : Color.White)) : Color.White;
+                Color textColor = Enabled ? borderColor : Color.FromArgb(0x7C, 0xBF, 0x94);
+
+                using (var path = GetRoundedPath(rect, 8))
+                using (var fillBrush = new SolidBrush(fillColor))
+                using (var pen = new Pen(borderColor, 1.5f))
+                {
+                    e.Graphics.FillPath(fillBrush, path);
+                    e.Graphics.DrawPath(pen, path);
+                }
+
+                var outlineTextRect = new Rectangle(Padding.Left, 0, Width - Padding.Left - Padding.Right, Height);
+                using (var textBrush = new SolidBrush(textColor))
+                {
+                    var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+                    e.Graphics.DrawString(Text, Font, textBrush, outlineTextRect, sf);
+                }
+                return;
+            }
+
             Color bgColor;
             Color fgColor;
 
             if (!Enabled)
             {
-                bgColor = Color.FromArgb(0xCC, 0xCC, 0xCC);
-                fgColor = Color.FromArgb(0x88, 0x88, 0x88);
+                bgColor = Color.FromArgb(0xBE, 0xDF, 0xCA);
+                fgColor = Color.FromArgb(0x7C, 0xBF, 0x94);
             }
             else if (_isPressed)
             {
@@ -72,8 +109,7 @@ namespace AuserExcelTransformer.UI.Controls
                 fgColor = _baseForeColor;
             }
 
-            var rect = new Rectangle(0, 0, Width - 1, Height - 1);
-            using (var path = GetRoundedPath(rect, 6))
+            using (var path = GetRoundedPath(rect, 8))
             using (var brush = new SolidBrush(bgColor))
             {
                 e.Graphics.FillPath(brush, path);

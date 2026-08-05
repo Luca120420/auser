@@ -881,6 +881,7 @@ namespace AuserExcelTransformer.Tests
 
             public bool ConfirmAction(string message) => true;
             public void ShowErrorMessage(string message) { }
+            public void ShowVolunteerErrorMessage(string message) { }
         }
 
         /// <summary>

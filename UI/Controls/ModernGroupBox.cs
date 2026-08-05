@@ -10,18 +10,18 @@ namespace AuserExcelTransformer.UI.Controls
     /// </summary>
     public class ModernGroupBox : GroupBox
     {
-        private static readonly Color HeaderBackground = Color.FromArgb(0x39, 0x39, 0x39); // #393939 Carbone
+        private static readonly Color HeaderBackground = Color.FromArgb(0x06, 0x85, 0x34); // #068534 Deep green
         private static readonly Color HeaderForeground = Color.White;
-        private static readonly Color BorderColor      = Color.FromArgb(0xE0, 0xE0, 0xE0); // #E0E0E0
+        private static readonly Color BorderColor      = Color.FromArgb(0xBE, 0xDF, 0xCA); // #bedfca
         private static readonly Font  HeaderFont       = new Font("Segoe UI", 10F, FontStyle.Bold);
-        private const int CornerRadius = 4;
+        private const int CornerRadius = 8;
         private const int HeaderHeight = 28;
         private const int HeaderPadding = 8;
 
         public ModernGroupBox()
         {
             BackColor = Color.White;
-            ForeColor = Color.FromArgb(0x39, 0x39, 0x39);
+            ForeColor = Color.FromArgb(0x06, 0x85, 0x34);
             Font = new Font("Segoe UI", 9F);
         }
 

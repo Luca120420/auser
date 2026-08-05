@@ -489,6 +489,7 @@ namespace AuserExcelTransformer.Tests
             public void ShowEmailSummary(int successCount, int failureCount) { }
             public bool ConfirmAction(string message) => true;
             public void ShowErrorMessage(string message) { }
+            public void ShowVolunteerErrorMessage(string message) { }
         }
 
         #endregion

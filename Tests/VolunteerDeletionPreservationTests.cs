@@ -331,14 +331,15 @@ namespace AuserExcelTransformer.Tests
                         var nonExistentFile = Path.Combine(Path.GetTempPath(), $"nonexistent_{Guid.NewGuid()}.json");
                         controller.OnVolunteerFileSelected(nonExistentFile);
 
-                        // Assert - Verify error message was shown
-                        if (!mockUI.ShowErrorMessageCalled)
+                        // Assert - Verify error message was shown (volunteer-list errors surface
+                        // under "Elenco Volontari", not the generic status area)
+                        if (!mockUI.ShowVolunteerErrorMessageCalled)
                         {
-                            return false.Label("Error handling failed: ShowErrorMessage not called for file not found");
+                            return false.Label("Error handling failed: ShowVolunteerErrorMessage not called for file not found");
                         }
 
                         // Reset mock UI
-                        mockUI.ShowErrorMessageCalled = false;
+                        mockUI.ShowVolunteerErrorMessageCalled = false;
 
                         // Test Case 2: Invalid file format error
                         var invalidFile = Path.Combine(Path.GetTempPath(), $"invalid_{Guid.NewGuid()}.json");
@@ -346,32 +347,32 @@ namespace AuserExcelTransformer.Tests
                         controller.OnVolunteerFileSelected(invalidFile);
 
                         // Assert - Verify error message was shown
-                        if (!mockUI.ShowErrorMessageCalled)
+                        if (!mockUI.ShowVolunteerErrorMessageCalled)
                         {
                             File.Delete(invalidFile);
-                            return false.Label("Error handling failed: ShowErrorMessage not called for invalid file format");
+                            return false.Label("Error handling failed: ShowVolunteerErrorMessage not called for invalid file format");
                         }
 
                         File.Delete(invalidFile);
 
                         // Test Case 3: Invalid email validation
-                        mockUI.ShowErrorMessageCalled = false;
+                        mockUI.ShowVolunteerErrorMessageCalled = false;
                         controller.OnAddVolunteer("TestSurname", "invalid-email");
 
                         // Assert - Verify error message was shown for invalid email
-                        if (!mockUI.ShowErrorMessageCalled)
+                        if (!mockUI.ShowVolunteerErrorMessageCalled)
                         {
-                            return false.Label("Error handling failed: ShowErrorMessage not called for invalid email");
+                            return false.Label("Error handling failed: ShowVolunteerErrorMessage not called for invalid email");
                         }
 
                         // Test Case 4: Empty surname validation
-                        mockUI.ShowErrorMessageCalled = false;
+                        mockUI.ShowVolunteerErrorMessageCalled = false;
                         controller.OnAddVolunteer("", "test@example.com");
 
                         // Assert - Verify error message was shown for empty surname
-                        if (!mockUI.ShowErrorMessageCalled)
+                        if (!mockUI.ShowVolunteerErrorMessageCalled)
                         {
-                            return false.Label("Error handling failed: ShowErrorMessage not called for empty surname");
+                            return false.Label("Error handling failed: ShowVolunteerErrorMessage not called for empty surname");
                         }
 
                         return true.ToProperty();
@@ -698,6 +699,7 @@ namespace AuserExcelTransformer.Tests
             public bool DisplayVolunteerListCalled { get; set; }
             public bool EnableSendEmailsButtonCalled { get; set; }
             public bool ShowErrorMessageCalled { get; set; }
+            public bool ShowVolunteerErrorMessageCalled { get; set; }
 
             public void DisplayVolunteerList(Dictionary<string, string> volunteers)
             {
@@ -722,6 +724,11 @@ namespace AuserExcelTransformer.Tests
             public void ShowErrorMessage(string message)
             {
                 ShowErrorMessageCalled = true;
+            }
+
+            public void ShowVolunteerErrorMessage(string message)
+            {
+                ShowVolunteerErrorMessageCalled = true;
             }
         }
 

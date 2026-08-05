@@ -57,4 +57,13 @@ public interface IVolunteerUI
     /// </summary>
     /// <param name="message">Error message to display</param>
     void ShowErrorMessage(string message);
+
+    /// <summary>
+    /// Shows an error message related to volunteer contact management (adding,
+    /// deleting, importing volunteers). Displayed near the "Elenco Volontari"
+    /// section rather than the general status area, since it's specific to
+    /// that part of the UI.
+    /// </summary>
+    /// <param name="message">Error message to display</param>
+    void ShowVolunteerErrorMessage(string message);
 }

@@ -17,7 +17,7 @@ namespace AuserExcelTransformer.UI
         public HeaderPanel()
         {
             Height = 80;
-            BackColor = Color.FromArgb(0x39, 0x39, 0x39); // Carbone
+            BackColor = Color.FromArgb(0x06, 0x85, 0x34); // #068534 Deep green
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             Dock = DockStyle.None;
 

@@ -127,17 +127,17 @@ public class VolunteerNotificationController : IVolunteerNotificationController
             catch (FileNotFoundException)
             {
                 // Handle file not found error with Italian message (Requirement 1.5)
-                _ui.ShowErrorMessage(Properties.Resources.ErrorVolunteerFileNotFound);
+                _ui.ShowVolunteerErrorMessage(Properties.Resources.ErrorVolunteerFileNotFound);
             }
             catch (InvalidOperationException)
             {
                 // Handle invalid JSON error with Italian message (Requirement 1.5)
-                _ui.ShowErrorMessage(Properties.Resources.ErrorInvalidVolunteerFile);
+                _ui.ShowVolunteerErrorMessage(Properties.Resources.ErrorInvalidVolunteerFile);
             }
             catch (Exception ex)
             {
                 // Handle any other errors with Italian message
-                _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+                _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
             }
         }
 
@@ -162,28 +162,30 @@ public class VolunteerNotificationController : IVolunteerNotificationController
         catch (ArgumentException ex)
         {
             // Handle validation errors with Italian messages (Requirement 8.12)
+            // Shown under "Elenco Volontari" (ShowVolunteerErrorMessage), not the
+            // general "Invio Email" status area, since these are volunteer-list errors.
             if (ex.ParamName == "surname")
             {
-                _ui.ShowErrorMessage("Il cognome non può essere vuoto.");
+                _ui.ShowVolunteerErrorMessage("Il cognome non può essere vuoto.");
             }
             else if (ex.ParamName == "email")
             {
-                _ui.ShowErrorMessage("L'indirizzo email non è valido.");
+                _ui.ShowVolunteerErrorMessage("L'indirizzo email non è valido.");
             }
             else
             {
-                _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+                _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
             }
         }
         catch (IOException ex)
         {
             // Handle file save errors
-            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
         }
         catch (Exception ex)
         {
             // Handle any other unexpected errors
-            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
         }
     }
 
@@ -212,14 +214,77 @@ public class VolunteerNotificationController : IVolunteerNotificationController
             catch (IOException ex)
             {
                 // Handle file save errors with Italian message
-                _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+                _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
             }
             catch (Exception ex)
             {
                 // Handle any other unexpected errors with Italian message
-                _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+                _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
             }
         }
+
+    /// <summary>
+    /// Handles editing an existing volunteer's surname and/or email.
+    /// Validates the new values the same way as adding a volunteer, then, if the
+    /// surname changed, removes the old dictionary entry so it isn't left behind
+    /// alongside the new one (surname is the dictionary key).
+    /// </summary>
+    public void OnEditVolunteer(string originalSurname, string newSurname, string newEmail)
+    {
+        try
+        {
+            // Validate and upsert the new surname/email first (throws ArgumentException
+            // on empty surname or invalid email, same as OnAddVolunteer).
+            _volunteerManager.AddVolunteer(newSurname, newEmail, _volunteers);
+
+            // If the surname changed, remove the old entry so we don't end up with
+            // both the old and the new surname in the dictionary.
+            if (!string.Equals(originalSurname, newSurname, StringComparison.Ordinal))
+            {
+                _volunteerManager.RemoveVolunteer(originalSurname, _volunteers);
+            }
+
+            // Save updated volunteers to external file if path exists
+            if (!string.IsNullOrEmpty(_volunteerFilePath))
+            {
+                _volunteerManager.SaveVolunteers(_volunteerFilePath, _volunteers);
+            }
+
+            // Save updated volunteers to internal storage (volunteers.json)
+            SaveVolunteersToInternalStorage();
+
+            // Refresh UI volunteer list
+            _ui.DisplayVolunteerList(_volunteers);
+
+            // Update send emails button state
+            _ui.EnableSendEmailsButton(CanSendEmails());
+        }
+        catch (ArgumentException ex)
+        {
+            // Handle validation errors with Italian messages, shown under "Elenco
+            // Volontari" like the other volunteer-list errors.
+            if (ex.ParamName == "surname")
+            {
+                _ui.ShowVolunteerErrorMessage("Il cognome non può essere vuoto.");
+            }
+            else if (ex.ParamName == "email")
+            {
+                _ui.ShowVolunteerErrorMessage("L'indirizzo email non è valido.");
+            }
+            else
+            {
+                _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            }
+        }
+        catch (IOException ex)
+        {
+            _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+        }
+        catch (Exception ex)
+        {
+            _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+        }
+    }
 
 
     public void OnDeleteAllVolunteers()
@@ -255,12 +320,12 @@ public class VolunteerNotificationController : IVolunteerNotificationController
         catch (IOException ex)
         {
             // Handle file save errors with Italian message
-            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
         }
         catch (Exception ex)
         {
             // Handle any other unexpected errors with Italian message
-            _ui.ShowErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
+            _ui.ShowVolunteerErrorMessage(string.Format(Properties.Resources.ErrorGeneral, ex.Message));
         }
     }
 
