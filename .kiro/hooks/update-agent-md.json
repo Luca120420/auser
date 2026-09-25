@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Update AGENT.md on session end",
+      "trigger": "Stop",
+      "action": {
+        "type": "agent",
+        "prompt": "Review all the changes made during this session (files created, modified, or deleted). If any change affects the information documented in AGENT.md — including architecture, services, column structure, formatting rules, build commands, known pitfalls, or the feature checklist — update AGENT.md to reflect the current state of the project. Be precise: only update the sections that are actually out of date. Do not rewrite sections that are still accurate. If nothing changed that affects AGENT.md, leave it as is."
+      }
+    }
+  ]
+}

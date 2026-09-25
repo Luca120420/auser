@@ -548,31 +548,11 @@ namespace AuserExcelTransformer.Services
                         targetCell.Value = sourceCell.Value;
                     }
 
-                    // Copy formatting (but NEVER copy background color to avoid yellow highlighting)
+                    // Apply number format only — do NOT copy font properties so fissi rows
+                    // inherit the worksheet default font, matching the other data rows.
+                    // EXPLICITLY SKIP background color to avoid yellow highlighting.
                     if (sourceCell.Style != null)
                     {
-                        // Copy font properties
-                        targetCell.Style.Font.Bold = sourceCell.Style.Font.Bold;
-                        targetCell.Style.Font.Italic = sourceCell.Style.Font.Italic;
-                        targetCell.Style.Font.Size = sourceCell.Style.Font.Size;
-                        targetCell.Style.Font.Name = sourceCell.Style.Font.Name;
-                        
-                        // Copy font color if set
-                        if (!string.IsNullOrEmpty(sourceCell.Style.Font.Color.Rgb))
-                        {
-                            var fontColorHex = sourceCell.Style.Font.Color.Rgb;
-                            targetCell.Style.Font.Color.SetColor(System.Drawing.ColorTranslator.FromHtml("#" + fontColorHex.Substring(2)));
-                        }
-                        
-                        // EXPLICITLY SKIP background color to avoid yellow highlighting
-                        // Do NOT copy: sourceCell.Style.Fill.PatternType and BackgroundColor
-                        
-                        // Copy borders
-                        targetCell.Style.Border.Top.Style = sourceCell.Style.Border.Top.Style;
-                        targetCell.Style.Border.Bottom.Style = sourceCell.Style.Border.Bottom.Style;
-                        targetCell.Style.Border.Left.Style = sourceCell.Style.Border.Left.Style;
-                        targetCell.Style.Border.Right.Style = sourceCell.Style.Border.Right.Style;
-                        
                         // Copy number format (for dates and other formatted columns) - exclude time columns 2 and 9
                         if (!string.IsNullOrEmpty(sourceCell.Style.Numberformat.Format) && fissiCol != 2 && fissiCol != 9)
                         {
